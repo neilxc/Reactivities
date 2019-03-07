@@ -1,0 +1,92 @@
+[
+    {
+        "id": 1,
+        "title": "Past Activity 1",
+        "description": "Activity 2 months ago",
+        "category": "Drinks",
+        "date": "2019-01-04T14:16:05.987926",
+        "city": "London",
+        "venue": "Pub"
+    },
+    {
+        "id": 2,
+        "title": "Past Activity 2",
+        "description": "Activity 1 month ago",
+        "category": "Culture",
+        "date": "2019-02-04T14:16:05.996833",
+        "city": "Paris",
+        "venue": "The Louvre"
+    },
+    {
+        "id": 3,
+        "title": "Future Activity 1",
+        "description": "Activity 1 month in future",
+        "category": "Music",
+        "date": "2019-04-04T14:16:05.996841",
+        "city": "London",
+        "venue": "Wembly Stadium"
+    },
+    {
+        "id": 4,
+        "title": "Future Activity 2",
+        "description": "Activity 2 months in future",
+        "category": "Food",
+        "date": "2019-05-04T14:16:05.996841",
+        "city": "London",
+        "venue": "Jamies Italian"
+    },
+    {
+        "id": 5,
+        "title": "Future Activity 3",
+        "description": "Activity 3 months in future",
+        "category": "Drinks",
+        "date": "2019-06-04T14:16:05.996841",
+        "city": "London",
+        "venue": "Pub"
+    },
+    {
+        "id": 6,
+        "title": "Future Activity 4",
+        "description": "Activity 4 months in future",
+        "category": "Culture",
+        "date": "2019-07-04T14:16:05.996842",
+        "city": "London",
+        "venue": "British Museum"
+    },
+    {
+        "id": 7,
+        "title": "Future Activity 5",
+        "description": "Activity 5 months in future",
+        "category": "Drinks",
+        "date": "2019-08-04T14:16:05.996843",
+        "city": "London",
+        "venue": "Punch and Judy"
+    },
+    {
+        "id": 8,
+        "title": "Future Activity 6",
+        "description": "Activity 6 months in future",
+        "category": "Music",
+        "date": "2019-09-04T14:16:05.996843",
+        "city": "London",
+        "venue": "O2 Arena"
+    },
+    {
+        "id": 9,
+        "title": "Future Activity 7",
+        "description": "Activity 2 months ago",
+        "category": "Travel",
+        "date": "2019-10-04T14:16:05.996843",
+        "city": "Berlin",
+        "venue": "All"
+    },
+    {
+        "id": 10,
+        "title": "Future Activity 8",
+        "description": "Activity 8 months in future",
+        "category": "Drinks",
+        "date": "2019-11-04T14:16:05.996844",
+        "city": "London",
+        "venue": "Pub"
+    }
+]
