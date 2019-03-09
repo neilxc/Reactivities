@@ -1,11 +1,13 @@
 import React from "react";
 import { Item, Button, Segment, Label } from "semantic-ui-react";
-import format from 'date-fns/format'
+import {Link} from 'react-router-dom';
+import format from 'date-fns/format';
+import {withContext} from '../../../app/context';
 
-const ActivityList = ({ activities, selectActivity, editSelectedActivity, deleteActivity, loading, target }) => (
+const ActivityList = ({ activitiesByDate, onActivityDelete, loading, target }) => (
   <Segment clearing>
     <Item.Group divided>
-      {activities.map(activity => (
+      {activitiesByDate.map(activity => (
         <Item key={activity.id}>
           <Item.Content>
             <Item.Header as="a">{activity.title}</Item.Header>
@@ -18,18 +20,20 @@ const ActivityList = ({ activities, selectActivity, editSelectedActivity, delete
             </Item.Description>
             <Item.Extra>
               <Button
+                as={Link}
+                to={`/activity/${activity.id}`}
                 floated="right"
                 basic
                 content="View"
                 color="blue"
-                onClick={() => selectActivity(activity.id)}
               />
               <Button
+                as={Link}
+                to={`/manage/${activity.id}`}
                 floated="right"
                 basic
                 content="Edit"
                 color="green"
-                onClick={() => editSelectedActivity(activity.id)}
               />
               <Button
                 name={activity.id}
@@ -38,7 +42,7 @@ const ActivityList = ({ activities, selectActivity, editSelectedActivity, delete
                 content="Delete"
                 color="red"
                 loading={+target === activity.id && loading}
-                onClick={(e) => deleteActivity(activity.id, e)}
+                onClick={(e) => onActivityDelete(activity.id, e)}
               />
               <Label basic>{activity.category}</Label>
             </Item.Extra>
@@ -49,4 +53,4 @@ const ActivityList = ({ activities, selectActivity, editSelectedActivity, delete
   </Segment>
 );
 
-export default ActivityList;
+export default withContext(ActivityList);

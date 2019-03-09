@@ -1,61 +1,32 @@
 import React, { Component } from "react";
 import { Form, Button, Segment } from "semantic-ui-react";
-import format from "date-fns/format";
-
-const categories = [
-  { key: "drinks", text: "Drinks", value: "Drinks" },
-  { key: "culture", text: "Culture", value: "Culture" },
-  { key: "film", text: "Film", value: "Film" },
-  { key: "food", text: "Food", value: "Food" },
-  { key: "music", text: "Music", value: "Music" },
-  { key: "travel", text: "Travel", value: "Travel" }
-];
+import LoadingComponent from "../../../app/layout/LoadingComponent";
+import { withContext } from "../../../app/context";
 
 class ActivityForm extends Component {
-  state = this.getInitialState();
-
-  getInitialState() {
-    const { activity } = this.props;
-
-    if (activity) {
-      activity.date = format(activity.date, "YYYY-MM-DDTHH:mm");
-    }
-
-    return activity
-      ? activity
-      : {
-          title: "",
-          description: "",
-          category: "",
-          date: "",
-          city: "",
-          venue: ""
-        };
+  componentDidMount() {
+    const { match, onFormLoad } = this.props;
+    onFormLoad(+match.params.id, true);
   }
 
-  // curried function
-  handleChange = name => ({ target: { value } }) =>
-    this.setState({ [name]: value });
-
-  handleSelectChange = (e, data) => {
-    this.setState({
-      ...this.state.activity,
-      category: data.value
-    });
-  };
-
-  handleSubmit = () => {
-    const { createActivity, editActivity, activity } = this.props;
-    if (!activity) {
-      createActivity({ ...this.state });
-    } else {
-      editActivity({ ...this.state });
-    }
-  };
-
   render() {
-    const { cancelFormEdit, activity, loading } = this.props;
-    const { title, description, category, date, city, venue } = this.state;
+    const {
+      onInputChange,
+      onSelectInputChange,
+      onActivityCreate,
+      onActivityEdit,
+      match,
+      history,
+      categories,
+      loading,
+      loadingActivity,
+      isEmpty,
+      activity,
+      activity: { title, description, category, date, city, venue }
+    } = this.props;
+    const existingActivity = !isEmpty(match.params);
+    if (loadingActivity || isEmpty(activity))
+      return <LoadingComponent inverted content="Loading activity..." />;
     return (
       <Segment clearing>
         <Form autoComplete="off">
@@ -64,7 +35,7 @@ class ActivityForm extends Component {
             placeholder="Title"
             name="title"
             value={title}
-            onChange={this.handleChange("title")}
+            onChange={onInputChange("title")}
           />
           <Form.TextArea
             rows={2}
@@ -72,7 +43,7 @@ class ActivityForm extends Component {
             label="Description"
             placeholder="Description"
             value={description}
-            onChange={this.handleChange("description")}
+            onChange={onInputChange("description")}
           />
           <Form.Select
             name="category"
@@ -80,7 +51,7 @@ class ActivityForm extends Component {
             placeholder="Category"
             options={categories}
             value={category}
-            onChange={(e, data) => this.handleSelectChange(e, data)}
+            onChange={(e, data) => onSelectInputChange(e, data)}
           />
           <Form.Input
             name="date"
@@ -88,36 +59,36 @@ class ActivityForm extends Component {
             label="Date"
             placeholder="Date"
             value={date}
-            onChange={this.handleChange("date")}
+            onChange={onInputChange("date")}
           />
           <Form.Input
             name="city"
             label="City"
             placeholder="City"
             value={city}
-            onChange={this.handleChange("city")}
+            onChange={onInputChange("city")}
           />
           <Form.Input
             name="venue"
             label="Venue"
             placeholder="Venue"
             value={venue}
-            onChange={this.handleChange("venue")}
+            onChange={onInputChange("venue")}
           />
           <Button
             floated="right"
             positive
             type="button"
-            onClick={this.handleSubmit}
+            onClick={existingActivity ? onActivityEdit : onActivityCreate}
             loading={loading}
           >
-            {activity ? "Edit" : "Create"}
+            {existingActivity ? "Edit" : "Create"}
           </Button>
           <Button
+            onClick={() => history.push("/activities")}
             floated="right"
             color="grey"
             type="button"
-            onClick={cancelFormEdit}
             disabled={loading}
           >
             Cancel
@@ -128,4 +99,4 @@ class ActivityForm extends Component {
   }
 }
 
-export default ActivityForm;
+export default withContext(ActivityForm);
