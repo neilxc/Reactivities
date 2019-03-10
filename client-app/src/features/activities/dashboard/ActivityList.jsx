@@ -1,56 +1,27 @@
-import React from "react";
-import { Item, Button, Segment, Label } from "semantic-ui-react";
-import {Link} from 'react-router-dom';
-import format from 'date-fns/format';
-import {withContext} from '../../../app/context';
+import React, { Fragment } from "react";
+import { Header, List } from "semantic-ui-react";
+import { withContext } from "../../../app/context";
+import ActivityListItem from "./ActivityListItem";
+import { format, parseISO } from "date-fns";
 
-const ActivityList = ({ activitiesByDate, onActivityDelete, loading, target }) => (
-  <Segment clearing>
-    <Item.Group divided>
-      {activitiesByDate.map(activity => (
-        <Item key={activity.id}>
-          <Item.Content>
-            <Item.Header as="a">{activity.title}</Item.Header>
-            <Item.Meta>{format(activity.date, 'DD MMM YYYY')} at {format(activity.date, 'HH:mm A')}</Item.Meta>
-            <Item.Description>
-              <div>{activity.description}</div>
-              <div>
-                {activity.venue}, {activity.city}
-              </div>
-            </Item.Description>
-            <Item.Extra>
-              <Button
-                as={Link}
-                to={`/activity/${activity.id}`}
-                floated="right"
-                basic
-                content="View"
-                color="blue"
-              />
-              <Button
-                as={Link}
-                to={`/manage/${activity.id}`}
-                floated="right"
-                basic
-                content="Edit"
-                color="green"
-              />
-              <Button
-                name={activity.id}
-                floated="right"
-                basic
-                content="Delete"
-                color="red"
-                loading={+target === activity.id && loading}
-                onClick={(e) => onActivityDelete(activity.id, e)}
-              />
-              <Label basic>{activity.category}</Label>
-            </Item.Extra>
-          </Item.Content>
-        </Item>
+const ActivityList = ({ activities, getActivitiesByDate }) => {
+  const activityGroup = getActivitiesByDate(activities);
+  return (
+    <Fragment>
+      {activityGroup.map(([group, activities]) => (
+        <Fragment key={group}>
+          <Header sub color={"teal"}>
+            {format(parseISO(group), "EEEE dd MMMM")}
+          </Header>
+          <List>
+            {activities.map(activity => (
+              <ActivityListItem key={activity.id} activity={activity} />
+            ))}
+          </List>
+        </Fragment>
       ))}
-    </Item.Group>
-  </Segment>
-);
+    </Fragment>
+  );
+};
 
 export default withContext(ActivityList);

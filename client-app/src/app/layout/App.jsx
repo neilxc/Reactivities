@@ -9,8 +9,8 @@ import ActivityForm from "../../features/activities/form/ActivityForm";
 import ActivityDetails from "../../features/activities/details/ActivityDetails";
 import { NotFound } from "./NotFound";
 import { categories } from "../common/form/data/options";
+import {combineDateAndTime} from '../common/util/util';
 import agent from "../api/agent";
-import format from "date-fns/format";
 
 class App extends Component {
   state = {
@@ -32,24 +32,28 @@ class App extends Component {
   }
 
   handleActivityCreate = () => {
-    const {activity} = this.state;
+    const { activity } = this.state;
+    const dateAndTime = combineDateAndTime(activity.date, activity.time);
+    const {date, time, ...activityToCreate} = this.state.activity;
     this.setState({ loading: true });
-    agent.Activities.create({...activity})
+    agent.Activities.create({ ...activityToCreate, date: dateAndTime })
       .then(createdActivity => {
         this.setState(({ activities }) => ({
           activities: [...activities, createdActivity]
         }));
       })
       .finally(() => {
-        this.setState({ loading: false });
+        this.setState({ loading: false});
         this.props.history.push(`/activities`);
       });
   };
 
   handleActivityEdit = () => {
-    const {activity} = this.state;
+    const { activity } = this.state;
+    const dateAndTime = combineDateAndTime(activity.date, activity.time);
+    const {date, time, ...activityToUpdate} = this.state.activity;
     this.setState({ loading: true });
-    agent.Activities.update({...activity})
+    agent.Activities.update({ ...activityToUpdate, date: dateAndTime })
       .then(updatedActivity => {
         this.setState(({ activities }) => ({
           activities: activities.map(a => {
@@ -59,18 +63,24 @@ class App extends Component {
               return a;
             }
           }),
-          activity: updatedActivity
+          activity: {}
         }));
       })
       .finally(() => {
-        this.setState({ loading: false });
+        this.setState({ loading: false, activity: {} });
         this.props.history.push(`/activity/${activity.id}`);
       });
   };
 
   getActivity = id => {
-    return this.state.activities.find(a => a.id === id);
+    const activity = Object.assign({}, [...this.state.activities.filter(a => a.id === id)][0]);
+    // const activity = [...this.state.activities.filter(a => a.id === id)][0];
+    return activity;
   };
+
+  clearActivity = () => {
+    this.setState({activity: {}})
+  }
 
   handleActivityDelete = (id, e) => {
     this.setState({ loading: true, target: e.target.name });
@@ -78,30 +88,38 @@ class App extends Component {
       .then(() => {
         this.setState(({ activities }) => ({
           activities: activities.filter(a => a.id !== id),
-          activity: null
+          activity: {}
         }));
       })
       .finally(() => this.setState({ loading: false, target: null }));
   };
 
-  handleLoadActivity = (id, acceptCached = false) => {
+  handleLoadActivity = (id, acceptCached = false, isForm = false) => {
     if (acceptCached) {
+      this.clearActivity();
       const activity = this.getActivity(id);
-      if (activity) {
+      if (!this.handleIsEmpty(activity)) {
+        if (isForm) {
+          activity.date = new Date(activity.date);
+          activity.time = new Date(activity.date);
+        } 
         this.setState({ activity });
-        return Promise.resolve(activity);
+        return;
       }
     }
     this.setState({ loadingActivity: true });
     return agent.Activities.get(id)
       .then(activity => {
-        activity.date = format(activity.date, "YYYY-MM-DDTHH:mm");
+        if (isForm) {
+          activity.date = new Date(activity.date);
+          activity.time = new Date(activity.date);
+        } 
         this.setState({ activity });
       })
       .finally(() => this.setState({ loadingActivity: false }));
   };
 
-  handleIsEmpty = (object) => Object.keys(object).length === 0;
+  handleIsEmpty = object => Object.keys(object).length === 0;
 
   handleInitializeForm = (id, acceptCached = false) => {
     if (!id) {
@@ -110,20 +128,31 @@ class App extends Component {
           title: "",
           description: "",
           category: "",
-          date: "",
+          date: null,
+          time: null,
           city: "",
           venue: ""
         }
       });
       return;
-    };
-    this.handleLoadActivity(id, acceptCached)
+    }
+    this.handleLoadActivity(id, acceptCached, true);
   };
 
-  handleInputChange = name => ({ target: { value } }) =>
+  handleDateInputChange = (value, name) => {
+    this.setState({
+      activity: {
+        ...this.state.activity,
+        [name]: value
+      }
+    })
+  }
+
+  handleInputChange = name => ({ target: { value } }) => {
     this.setState({
       activity: { ...this.state.activity, [name]: value }
     });
+  }
 
   handleSelectInputChange = (e, data) => {
     this.setState({
@@ -134,33 +163,35 @@ class App extends Component {
     });
   };
 
-  getActivitiesByDate() {
-    const sortedActivities = this.state.activities.sort(
+  getActivitiesByDate(activities) {
+    const sortedActivities = activities.sort(
       (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
     );
-    return sortedActivities;
-    // return Object.entries(
-    //   sortedActivities.reduce((activites, activity) => {
-    //     const date = activity.date.split("T")[0];
-    //     activities[date] = activites[date]
-    //       ? [...activities[date], activity]
-    //       : [activity];
-    //     return activities;
-    //   }, {})
-    // );
+
+    return Object.entries(
+      sortedActivities.reduce((activities, activity) => {
+        const date = activity.date.split("T")[0];
+        activities[date] = activities[date]
+          ? [...activities[date], activity]
+          : [activity];
+        return activities;
+      }, {})
+    );
   }
 
   getContext = () => ({
     categories,
     loadActivity: this.handleLoadActivity,
-    activitiesByDate: this.getActivitiesByDate(),
+    getActivitiesByDate: this.getActivitiesByDate,
     onActivityCreate: this.handleActivityCreate,
     onActivityEdit: this.handleActivityEdit,
     onActivityDelete: this.handleActivityDelete,
     onInputChange: this.handleInputChange,
     onSelectInputChange: this.handleSelectInputChange,
+    onDateInputChange: this.handleDateInputChange,
     onFormLoad: this.handleInitializeForm,
     isEmpty: this.handleIsEmpty,
+    clearActivity: this.clearActivity,
     ...this.state
   });
 

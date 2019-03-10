@@ -1,37 +1,59 @@
-import React from 'react';
-import { Segment, Button, Item, Icon } from 'semantic-ui-react';
+import React from "react";
+import {
+  Button,
+  Item,
+  SegmentGroup,
+  Segment,
+  ItemGroup,
+  ItemImage,
+  ItemContent,
+  ItemHeader,
+  ItemDescription,
+  Icon
+} from "semantic-ui-react";
+import { Link } from "react-router-dom";
+import { format, parseISO } from "date-fns";
+import { withContext } from "../../../app/context";
 
-const ActivityListItem = ({activity, selectActivity}) =>
-    <Segment.Group>
-        <Segment>
-            <Item.Group>
-                <Item>
-                    <Item.Image size='tiny' circular src='assets/user.png'/>
-                    <Item.Content>
-                        <Item.Header>{activity.title}</Item.Header>
-                        <Item.Description>
-                            Hosted By A.User
-                        </Item.Description>
-                    </Item.Content>
-                </Item>
-            </Item.Group>
-        </Segment>
-        <Segment>
-            <Icon name='clock'/> {activity.date}
-            <Icon name='marker'/> {activity.venue}, {activity.city}
-        </Segment>
-        <Segment secondary>
-            Attendees will go here
-        </Segment>
-        <Segment clearing>
-            <span>{activity.description}</span>
-            <Button 
-                content='View' 
-                floated='right' 
-                primary 
-                onClick={() => selectActivity(activity.id)}
-            />
-        </Segment>
-    </Segment.Group>
+const ActivityListItem = ({
+  activity,
+  selectActivity,
+  target,
+  loading,
+  onActivityDelete
+}) => (
+  <SegmentGroup>
+    <Segment>
+      <ItemGroup>
+        <Item>
+          <ItemImage size={"tiny"} circular src={"assets/user.png"} />
+          <ItemContent>
+            <ItemHeader as={Link} to={`/activity/${activity.id}`}>
+              {activity.title}
+            </ItemHeader>
+            <ItemDescription>Hosted by Bob</ItemDescription>
+          </ItemContent>
+        </Item>
+      </ItemGroup>
+    </Segment>
+    <Segment>
+      <span>
+        <Icon name="clock" /> {format(parseISO(activity.date), "h:mm a")}
+        <Icon name="marker" /> {activity.venue}, {activity.city}
+      </span>
+    </Segment>
+    <Segment secondary>Attendees will go in here</Segment>
+    <Segment clearing>
+      <span>{activity.description}</span>
+      <Button
+        as={Link}
+        to={`/activity/${activity.id}`}
+        color="teal"
+        floated="right"
+        content="View"
+      />
+    </Segment>
+  </SegmentGroup>
+);
 
-export default ActivityListItem;
+export default withContext(ActivityListItem);

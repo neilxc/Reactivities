@@ -1,8 +1,11 @@
 import React, { Component } from "react";
-import { Button, Card, Image, Grid } from "semantic-ui-react";
-import format from "date-fns/format";
+import { Grid } from "semantic-ui-react";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
 import { withContext } from "../../../app/context";
+import ActivityDetailsHeader from "./ActivityDetailsHeader";
+import ActivityDetailsInfo from "./ActivityDetailsInfo";
+import ActivityDetailsChat from "./ActivityDetailsChat";
+import ActivityDetailsSidebar from "./ActivityDetailsSidebar";
 
 class ActivityDetails extends Component {
   componentDidMount() {
@@ -10,40 +13,23 @@ class ActivityDetails extends Component {
     loadActivity(+match.params.id, true);
   }
 
+  componentWillUnmount() {
+    this.props.clearActivity();
+  }
+
   render() {
-    const { history, activity, loadingActivity } = this.props;
+    const { activity, loadingActivity } = this.props;
     if (loadingActivity)
       return <LoadingComponent inverted content="Loading Activity" />;
     return (
       <Grid>
         <Grid.Column width={10}>
-          <Card fluid>
-            <Image src={`/assets/categoryImages/${activity.category}.jpg`} />
-            <Card.Content>
-              <Card.Header>{activity.title}</Card.Header>
-              <Card.Meta>
-                <span className="date">
-                  {format(activity.date, "DD MMM YYYY")} at{" "}
-                  {format(activity.date, "HH:mm A")}
-                </span>
-              </Card.Meta>
-              <Card.Description>
-                <div>{activity.description}</div>
-                <div>{activity.city}</div>
-                <div>{activity.venue}</div>
-              </Card.Description>
-            </Card.Content>
-            <Card.Content extra>
-              <Button
-                basic
-                fluid
-                color="grey"
-                onClick={() => history.push("/activities")}
-              >
-                Cancel
-              </Button>
-            </Card.Content>
-          </Card>
+          <ActivityDetailsHeader activity={activity}/>
+          <ActivityDetailsInfo activity={activity}/>
+          <ActivityDetailsChat />
+        </Grid.Column>
+        <Grid.Column width={6}>
+          <ActivityDetailsSidebar />
         </Grid.Column>
       </Grid>
     );
