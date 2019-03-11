@@ -1,24 +1,26 @@
 import React, { Component } from "react";
 import { Grid } from "semantic-ui-react";
+import {inject, observer} from 'mobx-react';
 import LoadingComponent from "../../../app/layout/LoadingComponent";
-import { withContext } from "../../../app/context";
 import ActivityDetailsHeader from "./ActivityDetailsHeader";
 import ActivityDetailsInfo from "./ActivityDetailsInfo";
 import ActivityDetailsChat from "./ActivityDetailsChat";
 import ActivityDetailsSidebar from "./ActivityDetailsSidebar";
 
+@inject('activityStore')
+@observer
 class ActivityDetails extends Component {
   componentDidMount() {
-    const { match, loadActivity } = this.props;
+    const { match, activityStore: {loadActivity} } = this.props;
     loadActivity(+match.params.id, true);
   }
 
   componentWillUnmount() {
-    this.props.clearActivity();
+    // this.props.clearActivity();
   }
 
   render() {
-    const { activity, loadingActivity } = this.props;
+    const { activityStore: {loadingActivity, activity}} = this.props;
     if (loadingActivity)
       return <LoadingComponent inverted content="Loading Activity" />;
     return (
@@ -36,4 +38,4 @@ class ActivityDetails extends Component {
   }
 }
 
-export default withContext(ActivityDetails);
+export default ActivityDetails;

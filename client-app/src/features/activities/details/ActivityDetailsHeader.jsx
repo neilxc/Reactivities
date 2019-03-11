@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 import {
   SegmentGroup,
   Segment,
@@ -44,8 +44,7 @@ const ActivityDetailsHeader = ({ activity }) => (
                 style={{ color: "white" }}
               />
               <p>
-                {activity.date &&
-                  format(parseISO(activity.date), "EEEE do LLLL")}
+                {activity.date && format(activity.date, "eeee do MMMM")}
               </p>
               <p>
                 Hosted by <strong>Bob</strong>

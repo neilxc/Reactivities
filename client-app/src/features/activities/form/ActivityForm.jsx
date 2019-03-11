@@ -1,40 +1,36 @@
 import React, { Component } from "react";
 import { Form, Button, Segment, Grid } from "semantic-ui-react";
+import {inject, observer} from 'mobx-react';
 import LoadingComponent from "../../../app/layout/LoadingComponent";
-import { withContext } from "../../../app/context";
-import dateFnsLocalizer from "react-widgets-date-fns";
 import { DateTimePicker } from "react-widgets";
+import {isEmpty} from '../../../app/common/util/util';
+import {categories} from '../../../app/common/form/data/options';
 
-dateFnsLocalizer();
-
+@inject('activityStore')
+@observer
 class ActivityForm extends Component {
   componentDidMount() {
-    const { match, onFormLoad } = this.props;
-    onFormLoad(+match.params.id, true);
+    const { match, activityStore: {initializeForm} } = this.props;
+    initializeForm(+match.params.id, true);
   }
-
-  componentWillUnmount() {
-    this.props.clearActivity();
-  }
-
+  
   render() {
     const {
-      onInputChange,
-      onSelectInputChange,
-      onActivityCreate,
-      onDateInputChange,
-      onActivityEdit,
-      match,
-      history,
-      categories,
-      loading,
-      loadingActivity,
-      isEmpty,
-      activity,
-      activity: { title, description, category, date, time, city, venue }
+      activityStore: {
+        activity,
+        loadingActivity,
+        loading,
+        activity: {
+          title, description, category, date, time, city, venue
+        },
+        dateInputChange,
+        selectInputChange,
+        inputChange,
+        submitActivityForm
+      },
+      history
     } = this.props;
-    const existingActivity = !isEmpty(match.params);
-    if (loadingActivity || isEmpty(activity) || typeof(activity.date) === 'string' )
+    if (loadingActivity || isEmpty(activity))
       return <LoadingComponent inverted content="Loading activity..." />;
     return (
       <Grid>
@@ -46,7 +42,7 @@ class ActivityForm extends Component {
                 placeholder="Title"
                 name="title"
                 value={title}
-                onChange={onInputChange("title")}
+                onChange={inputChange("title")}
               />
               <Form.TextArea
                 rows={2}
@@ -54,7 +50,7 @@ class ActivityForm extends Component {
                 label="Description"
                 placeholder="Description"
                 value={description}
-                onChange={onInputChange("description")}
+                onChange={inputChange("description")}
               />
               <Form.Select
                 name="category"
@@ -62,7 +58,7 @@ class ActivityForm extends Component {
                 placeholder="Category"
                 options={categories}
                 value={category}
-                onChange={(e, data) => onSelectInputChange(e, data)}
+                onChange={(e, data) => selectInputChange(e, data)}
               />
               <Form.Group widths="equal">
                 <Form.Field>
@@ -72,7 +68,7 @@ class ActivityForm extends Component {
                     time={false}
                     placeholder="Date"
                     value={date}
-                    onChange={(value)=> onDateInputChange(value, "date")}
+                    onChange={(value)=> dateInputChange(value, "date")}
                   />
                 </Form.Field>
                 <Form.Field>
@@ -82,7 +78,7 @@ class ActivityForm extends Component {
                     date={false}
                     placeholder="Time"
                     value={time}
-                    onChange={(value) => onDateInputChange(value, "time")}
+                    onChange={(value) => dateInputChange(value, "time")}
                   />
                 </Form.Field>
               </Form.Group>
@@ -92,23 +88,23 @@ class ActivityForm extends Component {
                 label="City"
                 placeholder="City"
                 value={city}
-                onChange={onInputChange("city")}
+                onChange={inputChange("city")}
               />
               <Form.Input
                 name="venue"
                 label="Venue"
                 placeholder="Venue"
                 value={venue}
-                onChange={onInputChange("venue")}
+                onChange={inputChange("venue")}
               />
               <Button
                 floated="right"
                 positive
                 type="button"
-                onClick={existingActivity ? onActivityEdit : onActivityCreate}
+                onClick={submitActivityForm}
                 loading={loading}
               >
-                {existingActivity ? "Edit" : "Create"}
+                {activity.id ? "Edit" : "Create"}
               </Button>
               <Button
                 onClick={() => history.push("/activities")}
@@ -127,4 +123,4 @@ class ActivityForm extends Component {
   }
 }
 
-export default withContext(ActivityForm);
+export default ActivityForm;

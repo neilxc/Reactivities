@@ -7,3 +7,5 @@ export const combineDateAndTime = (date, time) => {
     const dateString = year + '-' + month + '-' + day;
     return new Date(dateString + ' ' + timeString);
 };
+
+export const isEmpty = object => Object.keys(object).length === 0;

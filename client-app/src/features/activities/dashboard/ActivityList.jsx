@@ -1,14 +1,13 @@
 import React, { Fragment } from "react";
 import { Header, List } from "semantic-ui-react";
-import { withContext } from "../../../app/context";
 import ActivityListItem from "./ActivityListItem";
 import { format, parseISO } from "date-fns";
+import {inject, observer} from 'mobx-react';
 
-const ActivityList = ({ activities, getActivitiesByDate }) => {
-  const activityGroup = getActivitiesByDate(activities);
+const ActivityList = ({ activityStore: {activitiesByDate} }) => {
   return (
     <Fragment>
-      {activityGroup.map(([group, activities]) => (
+      {activitiesByDate.map(([group, activities]) => (
         <Fragment key={group}>
           <Header sub color={"teal"}>
             {format(parseISO(group), "EEEE dd MMMM")}
@@ -24,4 +23,4 @@ const ActivityList = ({ activities, getActivitiesByDate }) => {
   );
 };
 
-export default withContext(ActivityList);
+export default inject('activityStore')(observer(ActivityList));

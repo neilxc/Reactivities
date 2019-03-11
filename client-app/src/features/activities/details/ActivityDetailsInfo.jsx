@@ -1,5 +1,5 @@
 import React from "react";
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 import { SegmentGroup, Grid, GridColumn, Icon, Segment } from "semantic-ui-react";
 
 const ActivityDetailsInfo = ({ activity }) => (
@@ -21,8 +21,8 @@ const ActivityDetailsInfo = ({ activity }) => (
         </Grid.Column>
         <Grid.Column width={15}>
           <span>
-            {activity.date && format(parseISO(activity.date), "eeee do MMMM")}{" "}
-            at {activity.date && format(parseISO(activity.date), "h:mm a")}
+            {activity.date && format(activity.date, "eeee do MMMM")}{" "}
+            at {activity.date && format(activity.date, "h:mm a")}
           </span>
         </Grid.Column>
       </Grid>

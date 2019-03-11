@@ -2,9 +2,9 @@ import React from "react";
 import { Grid } from "semantic-ui-react";
 import ActivityList from "./ActivityList";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
-import { withContext } from "../../../app/context";
+import { inject, observer } from 'mobx-react';
 
-const ActivityDashboard = ({loadingInitial}) => {
+const ActivityDashboard = ({activityStore: {loadingInitial}}) => {
   if (loadingInitial)
   return (
     <LoadingComponent inverted={true} content="Loading activities..." />
@@ -19,4 +19,4 @@ const ActivityDashboard = ({loadingInitial}) => {
   );
 }
 
-export default withContext(ActivityDashboard);
+export default inject('activityStore')(observer(ActivityDashboard));

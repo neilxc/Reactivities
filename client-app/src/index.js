@@ -1,19 +1,37 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter } from "react-router-dom";
+import { Provider } from "mobx-react";
+import { Router } from "react-router-dom";
+import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
+import { createBrowserHistory } from 'history';
 import "semantic-ui-css/semantic.min.css";
 import "./app/layout/styles.css";
 import App from "./app/layout/App";
 import * as serviceWorker from "./serviceWorker";
-import dateFnsLocalizer from 'react-widgets-date-fns';
-import 'react-widgets/dist/css/react-widgets.css';
+import dateFnsLocalizer from "react-widgets-date-fns";
+import "react-widgets/dist/css/react-widgets.css";
+import homeStore from './app/stores/homeStore';
+import activityStore from './app/stores/activityStore';
 
 dateFnsLocalizer();
 
+const browserHistory = createBrowserHistory();
+export const routingStore = new RouterStore();
+
+const stores = {
+  homeStore,
+  activityStore,
+  routingStore
+}
+
+const history = syncHistoryWithStore(browserHistory, routingStore);
+
 ReactDOM.render(
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>,
+  <Provider {...stores}>
+    <Router history={history}>
+      <App />
+    </Router>
+  </Provider>,
   document.getElementById("root")
 );
 
