@@ -1,111 +1,71 @@
 import React, { Component } from "react";
+import MobxReactFormDevTools from "mobx-react-form-devtools";
 import { Form, Button, Segment, Grid } from "semantic-ui-react";
-import {inject, observer} from 'mobx-react';
+import { inject, observer } from "mobx-react";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
-import { DateTimePicker } from "react-widgets";
-import {isEmpty} from '../../../app/common/util/util';
-import {categories} from '../../../app/common/form/data/options';
+import MobxReactForm from "mobx-react-form";
+import activityForm from "../../../app/common/form/setup/activityFormSetup";
+import TextInput from "../../../app/common/form/inputs/TextInput";
+import TextAreaInput from "../../../app/common/form/inputs/TextAreaInput";
+import SelectInput from "../../../app/common/form/inputs/SelectInput";
+import DateInput from "../../../app/common/form/inputs/DateInput";
+import FormSubmitButton from "../../../app/common/form/controls/FormSubmitButton";
 
-@inject('activityStore')
+const form = new MobxReactForm(
+  { ...activityForm.fields },
+  { ...activityForm.hooks }
+);
+
+MobxReactFormDevTools.register({ form });
+MobxReactFormDevTools.select("form");
+MobxReactFormDevTools.open(true);
+
+@inject("activityStore")
 @observer
 class ActivityForm extends Component {
-  componentDidMount() {
-    const { match, activityStore: {initializeForm} } = this.props;
-    initializeForm(+match.params.id, true);
+  async componentDidMount() {
+    const {
+      match,
+      activityStore: { initializeForm }
+    } = this.props;
+    try {
+      // reset the form
+      form.init();
+      const activity = await initializeForm(+match.params.id, true);
+      if (activity) {
+        form.init({ ...activity });
+        // form.add({ key: "id", value: activity.id });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
-  
+
   render() {
     const {
-      activityStore: {
-        activity,
-        loadingActivity,
-        loading,
-        activity: {
-          title, description, category, date, time, city, venue
-        },
-        dateInputChange,
-        selectInputChange,
-        inputChange,
-        submitActivityForm
-      },
+      activityStore: { loadingActivity, loading },
       history
     } = this.props;
-    if (loadingActivity || isEmpty(activity))
+    if (loadingActivity)
       return <LoadingComponent inverted content="Loading activity..." />;
     return (
       <Grid>
+        <MobxReactFormDevTools.UI />
         <Grid.Column width={10}>
           <Segment clearing>
             <Form autoComplete="off">
-              <Form.Input
-                label="Title"
-                placeholder="Title"
-                name="title"
-                value={title}
-                onChange={inputChange("title")}
-              />
-              <Form.TextArea
-                rows={2}
-                name="description"
-                label="Description"
-                placeholder="Description"
-                value={description}
-                onChange={inputChange("description")}
-              />
-              <Form.Select
-                name="category"
-                label="Category"
-                placeholder="Category"
-                options={categories}
-                value={category}
-                onChange={(e, data) => selectInputChange(e, data)}
-              />
+              <TextInput field={form.$("title")} />
+              <TextAreaInput rows={2} field={form.$("description")} />
+              <SelectInput field={form.$("category")} />
               <Form.Group widths="equal">
-                <Form.Field>
-                  <label>Date</label>
-                  <DateTimePicker
-                    name="date"
-                    time={false}
-                    placeholder="Date"
-                    value={date}
-                    onChange={(value)=> dateInputChange(value, "date")}
-                  />
-                </Form.Field>
-                <Form.Field>
-                  <label>Time</label>
-                  <DateTimePicker
-                    name="time"
-                    date={false}
-                    placeholder="Time"
-                    value={time}
-                    onChange={(value) => dateInputChange(value, "time")}
-                  />
-                </Form.Field>
+                <DateInput field={form.$("date")} date={true} />
+                <DateInput field={form.$("time")} time={true} />
               </Form.Group>
-
-              <Form.Input
-                name="city"
-                label="City"
-                placeholder="City"
-                value={city}
-                onChange={inputChange("city")}
-              />
-              <Form.Input
-                name="venue"
-                label="Venue"
-                placeholder="Venue"
-                value={venue}
-                onChange={inputChange("venue")}
-              />
-              <Button
-                floated="right"
-                positive
-                type="button"
-                onClick={submitActivityForm}
-                loading={loading}
-              >
-                {activity.id ? "Edit" : "Create"}
-              </Button>
+              <TextInput field={form.$("city")} />
+              <TextInput field={form.$("venue")} />
+              <FormSubmitButton form={form} floated='right' loading={loading}>
+                {form.has("id") ? "Edit" : "Create"}
+              </FormSubmitButton>
               <Button
                 onClick={() => history.push("/activities")}
                 floated="right"

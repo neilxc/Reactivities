@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Middleware;
 using Application.Activities;
+using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -39,16 +41,18 @@ namespace API
                 {
                     b.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000");
                 }));
-            services.AddMvc()
-                .AddNewtonsoftJson();
+            services.AddMvc().AddFluentValidation(cfg => { 
+                cfg.RegisterValidatorsFromAssemblyContaining(typeof(Create)); });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseMiddleware<ErrorHandlingMiddleware>();
+            
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                // app.UseDeveloperExceptionPage();
             }
             else
             {
@@ -57,15 +61,8 @@ namespace API
             }
 
             app.UseHttpsRedirection();
-
-            app.UseRouting(routes =>
-            {
-                routes.MapApplication();
-            });
-
             app.UseCors("CorsPolicy");
-
-            app.UseAuthorization();
+            app.UseMvc();
         }
     }
 }

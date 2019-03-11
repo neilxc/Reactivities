@@ -8,6 +8,7 @@
     "date-fns": "^2.0.0-alpha.13",
     "mobx": "^5.9.0",
     "mobx-react": "^5.4.3",
+    "mobx-react-form": "^1.39.1",
     "mobx-react-router": "^4.0.5",
     "react": "^16.8.3",
     "react-dom": "^16.8.3",
@@ -17,7 +18,8 @@
     "react-widgets-date-fns": "^4.0.25",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.85.0",
-    "typescript": "^3.3.3333"
+    "typescript": "^3.3.3333",
+    "validatorjs": "^3.15.1"
   },
   "scripts": {
     "start": "craco start",
@@ -33,5 +35,9 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "mobx-react-devtools": "^6.1.1",
+    "mobx-react-form-devtools": "^1.11.1"
+  }
 }

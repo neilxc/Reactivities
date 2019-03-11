@@ -1,7 +1,6 @@
 import { observable, action, computed, configure, runInAction } from "mobx";
 import agent from "../api/agent";
-import { combineDateAndTime } from "../common/util/util";
-import {routingStore} from '../../index';
+import { routingStore } from "../../index";
 
 configure({ enforceActions: "always" });
 
@@ -33,6 +32,13 @@ class ActivityStore {
     }
   }
 
+  @action initializeForm = (id, acceptCached = false) => {
+    if (!id) {
+      return Promise.resolve(null);
+    }
+    return this.loadActivity(id, acceptCached, true);
+  };
+
   @action loadActivity = async (id, acceptCached = false, isForm = false) => {
     if (acceptCached) {
       const activity = this.getActivity(id);
@@ -55,8 +61,8 @@ class ActivityStore {
         this.activityRegistry.set(activity.id, activity);
         this.activity = activity;
         this.loadingActivity = false;
-        return activity;
       });
+      return Promise.resolve(activity);
     } catch (error) {
       runInAction(() => {
         this.loadingActivity = false;
@@ -65,71 +71,43 @@ class ActivityStore {
   };
 
   @action
-  submitActivityForm = async () => {
-    console.log(routingStore);
-    const dateAndTime = combineDateAndTime(
-      this.activity.date,
-      this.activity.time
-    );
-    const { date, time, ...activityToSend } = this.activity;
+  submitActivityForm = async activity => {
     this.loading = true;
     try {
-      const activity = this.activity.id
-        ? await agent.Activities.update({
-            ...activityToSend,
-            date: dateAndTime
-          })
-        : await agent.Activities.create({
-            ...activityToSend,
-            date: dateAndTime
-          });
-      activity.date = new Date(activity.date);
+      const returnedActivity = activity.id
+        ? await agent.Activities.update(activity)
+        : await agent.Activities.create(activity);
+      returnedActivity.date = new Date(returnedActivity.date);
       runInAction(() => {
-        this.activityRegistry.set(activity.id, activity);
+        this.activityRegistry.set(returnedActivity.id, returnedActivity);
         this.loading = false;
-        routingStore.push(`/activity/${activity.id}`);
+        routingStore.push(`/activity/${returnedActivity.id}`);
       });
     } catch (error) {
       console.log(error);
       runInAction(() => {
-          this.loading = false;
-      })
+        this.loading = false;
+      });
     }
   };
 
   @action
   deleteActivity = async (id, e) => {
-      this.loading = true;
-      this.target = e.target.name;
+    this.loading = true;
+    this.target = e.target.name;
     try {
-        await agent.Activities.delete(id);
-        runInAction(() => {
-            this.activityRegistry.delete(id);
-            this.loading = false;
-            this.target = null;
-        })
+      await agent.Activities.delete(id);
+      runInAction(() => {
+        this.activityRegistry.delete(id);
+        this.loading = false;
+        this.target = null;
+      });
     } catch (error) {
-        console.log(error);
-        runInAction(() => {
-            this.loading = false;
-        })
+      console.log(error);
+      runInAction(() => {
+        this.loading = false;
+      });
     }
-  };
-
-  @action initializeForm = (id, acceptCached = false) => {
-    if (!id) {
-      this.activity = {
-        title: "",
-        description: "",
-        category: "",
-        date: null,
-        time: null,
-        city: "",
-        venue: ""
-      };
-      return;
-    }
-    this.loadActivity(id, acceptCached, true);
   };
 
   getActivity(id) {
@@ -154,22 +132,6 @@ class ActivityStore {
       }, {})
     );
   }
-
-  @action
-  dateInputChange = (value, name) => {
-    this.activity = { ...this.activity, [name]: value };
-  };
-
-  @action
-  inputChange = name =>
-    action(({ target: { value } }) => {
-      this.activity = { ...this.activity, [name]: value };
-    });
-
-  @action
-  selectInputChange = (e, data) => {
-    this.activity = { ...this.activity, category: data.value };
-  };
 }
 
 export default new ActivityStore();
