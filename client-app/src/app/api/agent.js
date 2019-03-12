@@ -1,8 +1,23 @@
 import axios from 'axios';
+import {routingStore as router} from '../../index'; 
 
 axios.defaults.baseURL = 'https://localhost:5001/api';
 
-const responseBody = res => res.data;
+axios.interceptors.response.use(undefined, (error) => {
+    if (error.response.status === 404) {
+        router.push('/404');
+    }
+    if (error.response.status === 500) {
+        router.push('/serverError');
+        return;
+    }
+
+    console.log('interceptor - not a 404 or 500')
+    console.log(error.response);
+    throw error.response;
+})
+
+const responseBody = res => Promise.resolve(res.data);
 
 const sleep = (x) => new Promise(resolve => setTimeout(() => resolve(x), 1000));
 

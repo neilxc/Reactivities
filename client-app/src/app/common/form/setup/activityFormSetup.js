@@ -40,13 +40,20 @@ const fields = {
 
 const hooks = {
   hooks: {
-    onSuccess(form) {
+    async onSuccess(form) {
       const dateAndTime = combineDateAndTime(
         form.$("date").value,
         form.$("time").value
       );
       const { date, time, ...activity } = form.values();
-      activityStore.submitActivityForm({ ...activity, date: dateAndTime });
+      try {
+        await activityStore.submitActivityForm({ ...activity, date: dateAndTime });
+      } catch (error) {
+        form.invalidate(error);
+        form.each(field => {
+          field.debouncedValidation.cancel();
+        })
+      }
     },
     onError(form) {
       console.log("form errors", form.errors());
@@ -57,7 +64,7 @@ const hooks = {
   },
   options: {
     defaultGenericError: "Invalid Data",
-    validateOnChange: true
+    validateOnChange: true,
   }
 };
 

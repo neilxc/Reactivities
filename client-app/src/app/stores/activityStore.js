@@ -17,7 +17,7 @@ class ActivityStore {
     this.loadingInitial = true;
     try {
       const activities = await agent.Activities.all();
-      runInAction(() => {
+      runInAction("Populate activity registry",() => {
         activities.forEach(activity => {
           activity.date = new Date(activity.date);
           this.activityRegistry.set(activity.id, activity);
@@ -83,11 +83,14 @@ class ActivityStore {
         this.loading = false;
         routingStore.push(`/activity/${returnedActivity.id}`);
       });
+      return returnedActivity;
     } catch (error) {
-      console.log(error);
-      runInAction(() => {
-        this.loading = false;
-      });
+        console.log('activityStore - inside the catch method')
+        console.log(error);
+        runInAction(() => {
+          this.loading = false;
+        });
+        throw error;
     }
   };
 
@@ -103,7 +106,6 @@ class ActivityStore {
         this.target = null;
       });
     } catch (error) {
-      console.log(error);
       runInAction(() => {
         this.loading = false;
       });

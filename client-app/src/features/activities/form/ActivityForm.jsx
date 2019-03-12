@@ -10,6 +10,7 @@ import TextAreaInput from "../../../app/common/form/inputs/TextAreaInput";
 import SelectInput from "../../../app/common/form/inputs/SelectInput";
 import DateInput from "../../../app/common/form/inputs/DateInput";
 import FormSubmitButton from "../../../app/common/form/controls/FormSubmitButton";
+import ErrorMessage from "../../../app/common/form/errors/ErrorMessage";
 
 const form = new MobxReactForm(
   { ...activityForm.fields },
@@ -34,7 +35,6 @@ class ActivityForm extends Component {
       const activity = await initializeForm(+match.params.id, true);
       if (activity) {
         form.init({ ...activity });
-        // form.add({ key: "id", value: activity.id });
       }
     } catch (error) {
       console.log(error);
@@ -53,7 +53,7 @@ class ActivityForm extends Component {
         <MobxReactFormDevTools.UI />
         <Grid.Column width={10}>
           <Segment clearing>
-            <Form autoComplete="off">
+            <Form autoComplete="off" error={!!form.error}>
               <TextInput field={form.$("title")} />
               <TextAreaInput rows={2} field={form.$("description")} />
               <SelectInput field={form.$("category")} />
@@ -63,7 +63,9 @@ class ActivityForm extends Component {
               </Form.Group>
               <TextInput field={form.$("city")} />
               <TextInput field={form.$("venue")} />
-              <FormSubmitButton form={form} floated='right' loading={loading}>
+              {form.error &&
+              <ErrorMessage error={form.error}/>}
+              <FormSubmitButton form={form} floated="right" loading={loading}>
                 {form.has("id") ? "Edit" : "Create"}
               </FormSubmitButton>
               <Button
