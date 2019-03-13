@@ -12,19 +12,19 @@ namespace API.Controllers
     public class ActivitiesController : BaseController
     {
         [HttpGet]
-        public async Task<List<Activity>> List()
+        public async Task<List<ActivityDto>> List()
         {
             return await Mediator.Send(new List.Query());
         }
 
         [HttpGet("{id}")]
-        public async Task<Activity> Details(int id)
+        public async Task<ActivityDto> Details(int id)
         {
             return await Mediator.Send(new Details.Query{Id = id});
         }
 
         [HttpPost]
-        public async Task<Activity> Create(Create.Command command)
+        public async Task<ActivityDto> Create(Create.Command command)
         {
             return await Mediator.Send(command);
         }
@@ -40,6 +40,18 @@ namespace API.Controllers
         public async Task<Unit> Delete(int id)
         {
             return await Mediator.Send(new Delete.Command{Id = id});
+        }
+
+        [HttpPost("{id}/attend")]
+        public async Task<Unit> Attend(int id)
+        {
+            return await Mediator.Send(new Attend.Command{Id = id});
+        }
+
+        [HttpDelete("{id}/attend")]
+        public async Task<Unit> Unattend(int id)
+        {
+            return await Mediator.Send(new Unattend.Command{Id = id});
         }
     }
 }

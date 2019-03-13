@@ -53,6 +53,15 @@ namespace Persistence
                         Category = "Drinks",
                         City = "London",
                         Venue = "Pub",
+                        ActivityUsers = new List<ActivityUser>
+                        {
+                            new ActivityUser
+                            {
+                                AppUserId = 1,
+                                IsHost = true,
+                                DateJoined = DateTime.Now.AddMonths(-2)
+                            }
+                        }
                     },
                     new Activity
                     {
@@ -62,6 +71,15 @@ namespace Persistence
                         Category = "Culture",
                         City = "Paris",
                         Venue = "The Louvre",
+                        ActivityUsers = new List<ActivityUser>
+                        {
+                            new ActivityUser
+                            {
+                                AppUserId = 1,
+                                IsHost = true,
+                                DateJoined = DateTime.Now.AddMonths(-1)
+                            }
+                        }
                     },
                     new Activity
                     {
@@ -71,6 +89,21 @@ namespace Persistence
                         Category = "Music",
                         City = "London",
                         Venue = "Wembly Stadium",
+                        ActivityUsers = new List<ActivityUser>
+                        {
+                            new ActivityUser
+                            {
+                                AppUserId = 2,
+                                IsHost = true,
+                                DateJoined = DateTime.Now.AddMonths(1)
+                            },
+                            new ActivityUser
+                            {
+                                AppUserId = 1,
+                                IsHost = false,
+                                DateJoined = DateTime.Now.AddMonths(1)
+                            }
+                        }
                     },
                     new Activity
                     {
@@ -80,6 +113,15 @@ namespace Persistence
                         Category = "Food",
                         City = "London",
                         Venue = "Jamies Italian",
+                        ActivityUsers = new List<ActivityUser>
+                        {
+                            new ActivityUser
+                            {
+                                AppUserId = 3,
+                                IsHost = true,
+                                DateJoined = DateTime.Now.AddMonths(2)
+                            }
+                        }
                     },
                     new Activity
                     {
@@ -89,6 +131,15 @@ namespace Persistence
                         Category = "Drinks",
                         City = "London",
                         Venue = "Pub",
+                        ActivityUsers = new List<ActivityUser>
+                        {
+                            new ActivityUser
+                            {
+                                AppUserId = 1,
+                                IsHost = true,
+                                DateJoined = DateTime.Now.AddMonths(3)
+                            }
+                        }
                     },
                     new Activity
                     {
@@ -98,6 +149,15 @@ namespace Persistence
                         Category = "Culture",
                         City = "London",
                         Venue = "British Museum",
+                        ActivityUsers = new List<ActivityUser>
+                        {
+                            new ActivityUser
+                            {
+                                AppUserId = 2,
+                                IsHost = true,
+                                DateJoined = DateTime.Now.AddMonths(4)
+                            }
+                        }
                     },
                     new Activity
                     {
@@ -107,6 +167,15 @@ namespace Persistence
                         Category = "Drinks",
                         City = "London",
                         Venue = "Punch and Judy",
+                        ActivityUsers = new List<ActivityUser>
+                        {
+                            new ActivityUser
+                            {
+                                AppUserId = 3,
+                                IsHost = true,
+                                DateJoined = DateTime.Now.AddMonths(5)
+                            }
+                        }
                     },
                     new Activity
                     {
@@ -116,6 +185,15 @@ namespace Persistence
                         Category = "Music",
                         City = "London",
                         Venue = "O2 Arena",
+                        ActivityUsers = new List<ActivityUser>
+                        {
+                            new ActivityUser
+                            {
+                                AppUserId = 2,
+                                IsHost = true,
+                                DateJoined = DateTime.Now.AddMonths(6)
+                            }
+                        }
                     },
                     new Activity
                     {
@@ -125,6 +203,21 @@ namespace Persistence
                         Category = "Travel",
                         City = "Berlin",
                         Venue = "All",
+                        ActivityUsers = new List<ActivityUser>
+                        {
+                            new ActivityUser
+                            {
+                                AppUserId = 1,
+                                IsHost = true,
+                                DateJoined = DateTime.Now.AddMonths(7)
+                            },
+                            new ActivityUser
+                            {
+                                AppUserId = 2,
+                                IsHost = false,
+                                DateJoined = DateTime.Now.AddMonths(7)
+                            }
+                        }
                     },
                     new Activity
                     {
@@ -134,6 +227,15 @@ namespace Persistence
                         Category = "Drinks",
                         City = "London",
                         Venue = "Pub",
+                        ActivityUsers = new List<ActivityUser>
+                        {
+                            new ActivityUser
+                            {
+                                AppUserId = 1,
+                                IsHost = true,
+                                DateJoined = DateTime.Now.AddMonths(8)
+                            }
+                        }
                     }
                 };
 
