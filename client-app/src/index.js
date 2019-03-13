@@ -12,6 +12,9 @@ import dateFnsLocalizer from "react-widgets-date-fns";
 import "react-widgets/dist/css/react-widgets.css";
 import homeStore from './app/stores/homeStore';
 import activityStore from './app/stores/activityStore';
+import authStore from './app/stores/authStore';
+import commonStore from './app/stores/commonStore';
+import modalStore from './app/stores/modalStore';
 
 dateFnsLocalizer();
 
@@ -21,7 +24,10 @@ export const routingStore = new RouterStore();
 const stores = {
   homeStore,
   activityStore,
-  routingStore
+  routingStore,
+  authStore,
+  commonStore,
+  modalStore
 }
 
 const history = syncHistoryWithStore(browserHistory, routingStore);

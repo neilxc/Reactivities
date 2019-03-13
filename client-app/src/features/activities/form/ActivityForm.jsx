@@ -1,10 +1,8 @@
 import React, { Component } from "react";
-import MobxReactFormDevTools from "mobx-react-form-devtools";
 import { Form, Button, Segment, Grid } from "semantic-ui-react";
 import { inject, observer } from "mobx-react";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
-import MobxReactForm from "mobx-react-form";
-import activityForm from "../../../app/common/form/setup/activityFormSetup";
+import forms from '../../../app/common/form/forms';
 import TextInput from "../../../app/common/form/inputs/TextInput";
 import TextAreaInput from "../../../app/common/form/inputs/TextAreaInput";
 import SelectInput from "../../../app/common/form/inputs/SelectInput";
@@ -12,14 +10,7 @@ import DateInput from "../../../app/common/form/inputs/DateInput";
 import FormSubmitButton from "../../../app/common/form/controls/FormSubmitButton";
 import ErrorMessage from "../../../app/common/form/errors/ErrorMessage";
 
-const form = new MobxReactForm(
-  { ...activityForm.fields },
-  { ...activityForm.hooks }
-);
-
-MobxReactFormDevTools.register({ form });
-MobxReactFormDevTools.select("form");
-MobxReactFormDevTools.open(true);
+const form = forms.activityForm;
 
 @inject("activityStore")
 @observer
@@ -31,7 +22,7 @@ class ActivityForm extends Component {
     } = this.props;
     try {
       // reset the form
-      form.init();
+      // form.init();
       const activity = await initializeForm(+match.params.id, true);
       if (activity) {
         form.init({ ...activity });
@@ -50,7 +41,6 @@ class ActivityForm extends Component {
       return <LoadingComponent inverted content="Loading activity..." />;
     return (
       <Grid>
-        <MobxReactFormDevTools.UI />
         <Grid.Column width={10}>
           <Segment clearing>
             <Form autoComplete="off" error={!!form.error}>

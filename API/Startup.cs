@@ -9,6 +9,7 @@ using Application.Interfaces;
 using Domain;
 using FluentValidation.AspNetCore;
 using Infrastructure;
+using Infrastructure.Security;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -48,7 +49,7 @@ namespace API
             services.AddCors(options => options.AddPolicy("CorsPolicy",
                 b =>
                 {
-                    b.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000");
+                    b.AllowAnyMethod().AllowAnyHeader().WithOrigins("https://localhost:3000");
                 }));
             services.AddMvc(opt => 
                 {
@@ -78,6 +79,7 @@ namespace API
                 });
 
             services.AddScoped<IJwtGenerator, JwtGenerator>();
+            services.AddScoped<IUserAccessor, UserAccessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

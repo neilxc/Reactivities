@@ -3,7 +3,7 @@ import { Menu, Button, Container, Image, Dropdown } from "semantic-ui-react";
 import { Link, NavLink } from 'react-router-dom'
 import {inject, observer} from 'mobx-react';
 
-const Header = ({homeStore: {user, logout, isLoggedIn}}) => (
+const Header = ({authStore: {user, logout, isLoggedIn}}) => (
   <Menu fixed='top' inverted>
     <Container>
       <Menu.Item header as={NavLink} activeClassName='active' exact to='/'>
@@ -17,7 +17,7 @@ const Header = ({homeStore: {user, logout, isLoggedIn}}) => (
       {isLoggedIn &&
       <Menu.Item position='right'>
         <Image avatar spaced='right' src={user.image || '/assets/user.png'}/>
-        <Dropdown pointing='top left' text={user.firstName}>
+        <Dropdown pointing='top left' text={user.displayName}>
           <Dropdown.Menu>
             <Dropdown.Item text="Sign out" onClick={logout}/>
           </Dropdown.Menu>
@@ -27,4 +27,4 @@ const Header = ({homeStore: {user, logout, isLoggedIn}}) => (
   </Menu>
 );
 
-export default inject('homeStore')(observer(Header));
+export default inject('authStore')(observer(Header));

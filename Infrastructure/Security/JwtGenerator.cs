@@ -8,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 
-namespace Infrastructure
+namespace Infrastructure.Security
 {
     public class JwtGenerator : IJwtGenerator
     {

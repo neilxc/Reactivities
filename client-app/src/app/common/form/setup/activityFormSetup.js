@@ -1,8 +1,6 @@
 import { categories } from "../data/options";
 import { combineDateAndTime } from "../../util/util";
 import activityStore from "../../../stores/activityStore";
-import dvr from "mobx-react-form/lib/validators/DVR";
-import validatorjs from "validatorjs";
 
 const fields = {
   fields: ["title", "description", "category", "date", "time", "city", "venue"],
@@ -59,13 +57,13 @@ const hooks = {
       console.log("form errors", form.errors());
     }
   },
-  plugins: {
-    dvr: dvr(validatorjs)
-  },
-  options: {
-    defaultGenericError: "Invalid Data",
-    validateOnChange: true,
-  }
+  // plugins: {
+  //   dvr: dvr(validatorjs)
+  // },
+  // options: {
+  //   defaultGenericError: "Invalid Data",
+  //   validateOnChange: true,
+  // }
 };
 
 export default {

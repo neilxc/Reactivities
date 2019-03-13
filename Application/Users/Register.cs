@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Application.Errors;
 using Application.Interfaces;
+using Application.Validators;
 using Domain;
 using FluentValidation;
 using MediatR;
@@ -31,7 +32,7 @@ namespace Application.Users
                 RuleFor(x => x.DisplayName).NotEmpty();
                 RuleFor(x => x.Username).NotEmpty();
                 RuleFor(x => x.Email).NotEmpty();
-                RuleFor(x => x.Password).NotEmpty();
+                RuleFor(x => x.Password).Password();
             }
         }
 
@@ -50,10 +51,10 @@ namespace Application.Users
             public async Task<User> Handle(Command request, CancellationToken cancellationToken)
             {
                 if (await _context.Users.Where(x => x.Email == request.Email).AnyAsync())
-                    throw new RestException(HttpStatusCode.BadRequest, new {Email = "In use"});
+                    throw new RestException(HttpStatusCode.BadRequest, new string[] {"Email is in use"});
 
                 if (await _context.Users.Where(x => x.UserName == request.Username).AnyAsync())
-                    throw new RestException(HttpStatusCode.BadRequest, new {Username = "In use"});
+                    throw new RestException(HttpStatusCode.BadRequest, new string[] {"Username is in use"});
 
                 var user = new AppUser
                 {
