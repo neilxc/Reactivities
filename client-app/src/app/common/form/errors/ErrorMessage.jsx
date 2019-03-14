@@ -4,8 +4,8 @@ import { Message, MessageHeader, MessageList, MessageItem, MessageContent } from
 export default ({error, text}) =>
     <Message error>
         <MessageHeader>Error</MessageHeader>
-        {/* {text &&
-        <MessageContent content={error} />} */}
+        {text &&
+        <MessageContent content={error} />}
         <MessageList>
             {error && Object.values(error).map((err, i) => (
                 <MessageItem key={i}>{err}</MessageItem>

@@ -3,7 +3,6 @@ import agent from '../api/agent';
 import commonStore from './commonStore';
 // import modalStore from './modalStore';
 import {routingStore as router} from '../../index';
-import { th } from 'date-fns/esm/locale';
 
 class AuthStore {
     @observable loading = false;

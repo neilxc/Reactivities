@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { routingStore as router } from '../../index';
 import commonStore from '../stores/commonStore';
-import modalStore from '../stores/modalStore';
 
 axios.defaults.baseURL = 'https://localhost:5001/api';
 
@@ -25,11 +24,11 @@ axios.interceptors.response.use(undefined, error => {
     return;
   }
   if (error.response.status === 400) {
-    const error = error.response.data;
+    const err = error.response.data;
     let appErrors;
-    if (error && typeof badRequest === 'object') {
-      appErrors = Object.keys(error).reduce((r, k) => {
-        return r.concat(error[k]);
+    if (err && typeof badRequest === 'object') {
+      appErrors = Object.keys(err).reduce((r, k) => {
+        return r.concat(err[k]);
       }, []);
     }
     throw appErrors;
@@ -42,7 +41,7 @@ axios.interceptors.response.use(undefined, error => {
 
 const responseBody = res => Promise.resolve(res.data);
 
-const sleep = x => new Promise(resolve => setTimeout(() => resolve(x), 1000));
+const sleep = x => new Promise(resolve => setTimeout(() => resolve(x), 200));
 
 const requests = {
   get: url =>
@@ -72,7 +71,9 @@ const Activities = {
   get: id => requests.get(`/activities/${id}`),
   create: activity => requests.post(`/activities`, activity),
   update: activity => requests.put(`/activities/${activity.id}`, activity),
-  delete: id => requests.del(`/activities/${id}`)
+  delete: id => requests.del(`/activities/${id}`),
+  attend: id => requests.post(`/activities/${id}/attend`),
+  unattend: id => requests.del(`/activities/${id}/attend`)
 };
 
 const Users = {

@@ -1,8 +1,10 @@
-import { observable, action, computed, configure, runInAction } from "mobx";
-import agent from "../api/agent";
-import { routingStore } from "../../index";
+import { observable, action, computed, configure, runInAction } from 'mobx';
+import agent from '../api/agent';
+import { routingStore } from '../../index';
+import authStore from './authStore';
+import { setActivityProps, createAttendee } from '../common/util/util';
 
-configure({ enforceActions: "always" });
+configure({ enforceActions: 'always' });
 
 class ActivityStore {
   @observable activityRegistry = observable(new Map());
@@ -17,9 +19,10 @@ class ActivityStore {
     this.loadingInitial = true;
     try {
       const activities = await agent.Activities.all();
-      runInAction("Populate activity registry",() => {
+      const user = authStore.user;
+      runInAction('Populate activity registry', () => {
         activities.forEach(activity => {
-          activity.date = new Date(activity.date);
+          activity = setActivityProps(activity, user);
           this.activityRegistry.set(activity.id, activity);
         });
         this.loadingInitial = false;
@@ -32,43 +35,39 @@ class ActivityStore {
     }
   }
 
-  @action initializeForm = (id, acceptCached = false) => {
-    if (!id) {
-      return Promise.resolve(null);
-    }
-    return this.loadActivity(id, acceptCached, true);
-  };
-
-  @action loadActivity = async (id, acceptCached = false, isForm = false) => {
+  @action loadActivity = async (id, acceptCached = false) => {
+    if (!id) return null;
     if (acceptCached) {
       const activity = this.getActivity(id);
       if (activity) {
-        if (isForm) {
-          activity.time = activity.date;
-        }
-        this.activity = activity;
-        return Promise.resolve(activity);
+        runInAction('Setting activity from cache', () => {
+          this.activity = activity;
+        });
+        return activity;
       }
     }
     this.loadingActivity = true;
     try {
-      const activity = await agent.Activities.get(id);
-      activity.date = new Date(activity.date);
-      if (isForm) {
-        activity.time = activity.date;
-      }
-      runInAction(() => {
+      let activity = await agent.Activities.get(id);
+      const user = authStore.user;
+      activity = setActivityProps(activity, user);
+      runInAction('Setting activity from API', () => {
         this.activityRegistry.set(activity.id, activity);
         this.activity = activity;
         this.loadingActivity = false;
       });
-      return Promise.resolve(activity);
+      return activity;
     } catch (error) {
       runInAction(() => {
+        console.log(error);
         this.loadingActivity = false;
       });
     }
   };
+
+  @action clearActivity() {
+    this.activity = {};
+  }
 
   @action
   submitActivityForm = async activity => {
@@ -85,12 +84,11 @@ class ActivityStore {
       });
       return returnedActivity;
     } catch (error) {
-        console.log('activityStore - inside the catch method')
-        console.log(error);
-        runInAction(() => {
-          this.loading = false;
-        });
-        throw error;
+      console.log(error);
+      runInAction(() => {
+        this.loading = false;
+      });
+      throw error;
     }
   };
 
@@ -112,6 +110,42 @@ class ActivityStore {
     }
   };
 
+  @action attendActivity = async () => {
+    const attendee = createAttendee(authStore.user);
+    this.loading = true;
+    try {
+      await agent.Activities.attend(this.activity.id);
+      runInAction('Setting attendance', () => {
+        this.activity.attendees.push(attendee);
+        this.activity.isGoing = true;
+        this.activityRegistry.set(this.activity.id, this.activity);
+        this.loading = false;
+      });
+    } catch (err) {
+      this.loading = false;
+      console.log(err);
+    }
+  };
+
+  @action cancelAttendance = async () => {
+    const user = authStore.user;
+    this.loading = true;
+    try {
+      await agent.Activities.unattend(this.activity.id);
+      runInAction('Removing attendance', () => {
+        this.activity.attendees = this.activity.attendees.filter(
+          a => a.username !== user.username
+        );
+        this.activity.isGoing = false;
+        this.activityRegistry.set(this.activity.id, this.activity);
+        this.loading = false;
+      });
+    } catch (err) {
+      this.loading = false;
+      console.log(err);
+    }
+  };
+
   getActivity(id) {
     return this.activityRegistry.get(id);
   }
@@ -126,7 +160,7 @@ class ActivityStore {
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     return Object.entries(
       sortedActivities.reduce((activities, activity) => {
-        const date = activity.date.toISOString().split("T")[0];
+        const date = activity.date.toISOString().split('T')[0];
         activities[date] = activities[date]
           ? [...activities[date], activity]
           : [activity];
