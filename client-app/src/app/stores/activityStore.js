@@ -72,10 +72,12 @@ class ActivityStore {
   @action
   submitActivityForm = async activity => {
     this.loading = true;
+    const user = authStore.user;
     try {
-      const returnedActivity = activity.id
+      let returnedActivity = activity.id
         ? await agent.Activities.update(activity)
         : await agent.Activities.create(activity);
+      returnedActivity = setActivityProps(returnedActivity, user);
       returnedActivity.date = new Date(returnedActivity.date);
       runInAction(() => {
         this.activityRegistry.set(returnedActivity.id, returnedActivity);

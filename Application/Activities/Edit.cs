@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Application.Errors;
+using AutoMapper;
 using Domain;
 using FluentValidation;
 using MediatR;
@@ -13,7 +14,7 @@ namespace Application.Activities
 {
     public class Edit
     {
-        public class Command : IRequest<Activity>
+        public class Command : IRequest<ActivityDto>
         {
             public int Id { get; set; }
             public string Title { get; set; }
@@ -37,14 +38,16 @@ namespace Application.Activities
             }
         }
 
-        public class Handler : IRequestHandler<Command, Activity>
+        public class Handler : IRequestHandler<Command, ActivityDto>
         {
-            public DataContext _context { get; }
-            public Handler(DataContext context)
+            private readonly DataContext _context;
+            private readonly IMapper _mapper;
+            public Handler(DataContext context, IMapper mapper)
             {
                 _context = context;
+                _mapper = mapper;
             }
-            public async Task<Activity> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<ActivityDto> Handle(Command request, CancellationToken cancellationToken)
             {
                 var activity = await _context.Activities.FirstOrDefaultAsync(x => x.Id == request.Id);
 
@@ -60,7 +63,7 @@ namespace Application.Activities
 
                 await _context.SaveChangesAsync();
 
-                return activity;
+                return _mapper.Map<Activity, ActivityDto>(activity);
             }
         }
     }

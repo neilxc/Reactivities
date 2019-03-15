@@ -63,7 +63,13 @@ const requests = {
     axios
       .delete(url)
       .then(sleep)
-      .then(responseBody)
+      .then(responseBody),
+  form: (url, file) => {
+    let formData = new FormData();
+    formData.append('File', file);
+    return axios.post(url, formData, {headers: {'Content-type': 'multipart/form-data'}})
+      .then(responseBody);
+  }
 };
 
 const Activities = {
@@ -84,7 +90,15 @@ const Users = {
     requests.post('/users/register', values)
 };
 
+const Profiles = {
+  get: (username) => requests.get(`/profiles/${username}`),
+  setMainPhoto: (id) => requests.post(`/photos/${id}/setmain`),
+  deletePhoto: (id) => requests.del(`/photos/${id}`),
+  addPhoto: (photo) => requests.form(`/photos`, photo)
+}
+
 export default {
   Activities,
-  Users
+  Users,
+  Profiles
 };

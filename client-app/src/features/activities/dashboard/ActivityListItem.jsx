@@ -26,7 +26,7 @@ const ActivityListItem = ({
       <ItemGroup>
         <Item>
           <ItemImage
-            style={{marginBottom: 3}}
+            style={{ marginBottom: 3 }}
             size={'tiny'}
             circular
             src={activity.host.image || 'assets/user.png'}
@@ -36,20 +36,25 @@ const ActivityListItem = ({
               {activity.title}
             </ItemHeader>
             <ItemDescription>
-              Hosted by {activity.host.displayName}
+              Hosted by{' '}
+              <Link to={`/profile/${activity.host.username}`}>
+                {activity.host.displayName}
+              </Link>
             </ItemDescription>
-            {activity.isHost &&
-            <ItemDescription>
-              <Label basic color='orange'>
-                You are hosting this activity!
-              </Label>
-            </ItemDescription>}
-            {activity.isGoing && !activity.isHost &&
-            <ItemDescription>
-              <Label basic color='green'>
-                You are going to this activity!
-              </Label>
-            </ItemDescription>}
+            {activity.isHost && (
+              <ItemDescription>
+                <Label basic color='orange'>
+                  You are hosting this activity!
+                </Label>
+              </ItemDescription>
+            )}
+            {activity.isGoing && !activity.isHost && (
+              <ItemDescription>
+                <Label basic color='green'>
+                  You are going to this activity!
+                </Label>
+              </ItemDescription>
+            )}
           </ItemContent>
         </Item>
       </ItemGroup>

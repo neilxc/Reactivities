@@ -19,7 +19,8 @@ const Header = ({authStore: {user, logout, isLoggedIn}}) => (
         <Image avatar spaced='right' src={user.image || '/assets/user.png'}/>
         <Dropdown pointing='top left' text={user.displayName}>
           <Dropdown.Menu>
-            <Dropdown.Item text="Sign out" onClick={logout}/>
+            <Dropdown.Item as={Link} to={'/settings'} text="Settings" icon='settings'/>
+            <Dropdown.Item text="Sign out" icon='power' onClick={logout}/>
           </Dropdown.Menu>
         </Dropdown>
       </Menu.Item>}

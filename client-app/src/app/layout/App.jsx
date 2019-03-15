@@ -9,12 +9,13 @@ import Header from "../../features/header/Header";
 import HomePage from "../../features/home/HomePage";
 import ActivityForm from "../../features/activities/form/ActivityForm";
 import ActivityDetails from "../../features/activities/details/ActivityDetails";
-import LoginForm from "../../features/auth/LoginForm";
 import LoadingComponent from './LoadingComponent';
 import { NotFound } from "../api/errors/NotFound";
 import { inject, observer } from "mobx-react";
 import { ServerError } from "../api/errors/ServerError";
 import ModalContainer from "../modals/ModalContainer";
+import ProfilePage from "../../features/profiles/ProfilePage";
+import SettingsPage from "../../features/user/SettingsPage";
 
 MobxReactFormDevTools.register(forms);
 // MobxReactFormDevTools.select('loginForm');
@@ -58,7 +59,8 @@ class App extends Component {
                   <Route path="/manage/:id" component={ActivityForm} />
                   <Route path="/createActivity" component={ActivityForm} />
                   <Route path="/activity/:id" component={ActivityDetails} />
-                  <Route path="/login" component={LoginForm} />
+                  <Route path="/profile/:username" component={ProfilePage} />
+                  <Route path="/settings" component={SettingsPage} />
                   <Route path="/serverError" component={ServerError} />
                   <Route component={NotFound} />
                 </Switch>

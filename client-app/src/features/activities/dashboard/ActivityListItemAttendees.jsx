@@ -1,13 +1,15 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { ListItem, Image, List, Popup } from 'semantic-ui-react';
-import {format} from 'date-fns';
+// import {format} from 'date-fns';
+import ProfileCard from '../../profiles/ProfileCard';
 
 export default observer(({ attendees }) => (
   <List horizontal>
     {attendees.map(attendee => (
       <ListItem key={attendee.username}>
         <Popup
+          hoverable={true}
           trigger={
             <Image
               size={'mini'}
@@ -15,9 +17,9 @@ export default observer(({ attendees }) => (
               src={attendee.image || '/assets/user.png'}
             />
           }
-          header={attendee.displayName}
-          content={`Joined on ${format(attendee.dateJoined, 'do LLL y')}`}
-        />
+        >
+          <ProfileCard profile={attendee} />
+        </Popup>
       </ListItem>
     ))}
   </List>
