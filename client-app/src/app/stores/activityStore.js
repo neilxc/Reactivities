@@ -2,7 +2,9 @@ import { observable, action, computed, configure, runInAction } from 'mobx';
 import agent from '../api/agent';
 import { routingStore } from '../../index';
 import authStore from './authStore';
+import commonStore from './commonStore';
 import { setActivityProps, createAttendee } from '../common/util/util';
+import { HubConnectionBuilder, LogLevel } from '@aspnet/signalr';
 
 configure({ enforceActions: 'always' });
 
@@ -12,8 +14,48 @@ class ActivityStore {
   @observable activity = {};
   @observable loadingInitial = false;
   @observable loadingActivity = false;
+  @observable loadingComments = false;
   @observable loading = false;
   @observable target = null;
+  @observable.ref hubConnection = null;
+
+  @action createHubConnection(id) {
+    this.hubConnection = new HubConnectionBuilder()
+      .withUrl('https://localhost:5001/chat', {accessTokenFactory: () => commonStore.token})
+      .configureLogging(LogLevel.Information)
+      .build();
+
+    console.log('about to fire start hub connection')
+
+    this.hubConnection
+      .start()
+      .then(() => console.log(this.hubConnection.id))
+      .catch(err => console.log('Error while establishing connection : ', err));
+
+    console.log('connection started');
+
+    this.hubConnection.on('ReceiveComment', comment => {
+      console.log('hub activity');
+      runInAction(() => {
+        this.activity.comments.push(comment);
+      })
+    });
+  }
+
+  @action stopHubConnection = async () => {
+    this.hubConnection.stop();
+  };
+
+  @action addComment = async values => {
+    values.id = this.activity.id;
+    try {
+      this.hubConnection.invoke('SendComment', values);
+    } catch (error) {
+      runInAction(() => {
+        console.log(error);
+      });
+    }
+  };
 
   @action async loadActivities() {
     this.loadingInitial = true;
@@ -36,6 +78,7 @@ class ActivityStore {
   }
 
   @action loadActivity = async (id, acceptCached = false) => {
+    console.log('load activity fired');
     if (!id) return null;
     if (acceptCached) {
       const activity = this.getActivity(id);

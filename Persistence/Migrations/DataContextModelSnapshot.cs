@@ -62,8 +62,14 @@ namespace Persistence.Migrations
 
                     b.Property<int>("AccessFailedCount");
 
+                    b.Property<string>("Bio");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
+
+                    b.Property<DateTime>("Created");
+
+                    b.Property<DateTime?>("DateOfBirth");
 
                     b.Property<string>("DisplayName");
 
@@ -71,6 +77,10 @@ namespace Persistence.Migrations
                         .HasMaxLength(256);
 
                     b.Property<bool>("EmailConfirmed");
+
+                    b.Property<string>("Gender");
+
+                    b.Property<string>("HomeTown");
 
                     b.Property<bool>("LockoutEnabled");
 
@@ -105,6 +115,28 @@ namespace Persistence.Migrations
                         .HasName("UserNameIndex");
 
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("Domain.Comment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("ActivityId");
+
+                    b.Property<int?>("AuthorId");
+
+                    b.Property<string>("Body");
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityId");
+
+                    b.HasIndex("AuthorId");
+
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("Domain.Photo", b =>
@@ -271,6 +303,17 @@ namespace Persistence.Migrations
                         .WithMany("ActivityUsers")
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Domain.Comment", b =>
+                {
+                    b.HasOne("Domain.Activity", "Activity")
+                        .WithMany("Comments")
+                        .HasForeignKey("ActivityId");
+
+                    b.HasOne("Domain.AppUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId");
                 });
 
             modelBuilder.Entity("Domain.Photo", b =>

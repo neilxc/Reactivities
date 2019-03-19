@@ -94,7 +94,8 @@ const Profiles = {
   get: (username) => requests.get(`/profiles/${username}`),
   setMainPhoto: (id) => requests.post(`/photos/${id}/setmain`),
   deletePhoto: (id) => requests.del(`/photos/${id}`),
-  addPhoto: (photo) => requests.form(`/photos`, photo)
+  addPhoto: (photo) => requests.form(`/photos`, photo),
+  update: (profile) => requests.put('/profiles', profile)
 }
 
 export default {

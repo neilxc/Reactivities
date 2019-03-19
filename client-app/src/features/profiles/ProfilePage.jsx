@@ -2,12 +2,8 @@ import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { Grid } from 'semantic-ui-react';
 import ProfileHeader from './ProfileHeader';
-import ProfileDescription from './ProfileDescription';
-import ProfileSidebar from './ProfileSidebar';
-import ProfilePhotos from './ProfilePhotos';
-import ProfileEvents from './ProfileEvents';
-import { panes } from '../../app/common/form/data/panes';
 import LoadingComponent from '../../app/layout/LoadingComponent';
+import ProfileContent from './ProfileContent';
 
 @inject('profileStore')
 @observer
@@ -18,17 +14,18 @@ class Profile extends Component {
   }
 
   render() {
-    const {profileStore: {profile, loading}} = this.props; 
-    if (loading) return <LoadingComponent content={'Loading profile...'}/>
+    const {
+      profileStore: { profile, loadingProfile }
+    } = this.props;
+    if (loadingProfile) return <LoadingComponent content={'Loading profile...'} />;
     return (
-      <Grid>
-      <ProfileHeader profile={profile} />
-      <ProfileDescription profile={profile} />
-      <ProfileSidebar />
-      <ProfilePhotos photos={profile.photos} />
-      <ProfileEvents panes={panes} />
-    </Grid>
-    )
+      <Grid stackable>
+        <Grid.Column width={16}>
+          <ProfileHeader profile={profile} />
+          <ProfileContent />
+        </Grid.Column>
+      </Grid>
+    );
   }
 }
 export default Profile;

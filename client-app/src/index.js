@@ -16,6 +16,7 @@ import authStore from './app/stores/authStore';
 import commonStore from './app/stores/commonStore';
 import modalStore from './app/stores/modalStore';
 import profileStore from './app/stores/profileStore';
+import photoWidgetStore from './app/stores/photoWidgetStore'
 
 dateFnsLocalizer();
 
@@ -29,7 +30,8 @@ const stores = {
   authStore,
   commonStore,
   modalStore,
-  profileStore
+  profileStore,
+  photoWidgetStore
 }
 
 const history = syncHistoryWithStore(browserHistory, routingStore);

@@ -30,13 +30,18 @@ namespace Application.Profiles
                 var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName ==
                      request.Username);
 
-                return new Profile
+                // why no mapper?
+
+                var profile = new Profile
                 {
                     DisplayName = user.DisplayName,
                     Username = user.UserName,
-                    Image = user.Photos.FirstOrDefault(x => x.IsMain).Url,
+                    Bio = user.Bio,
+                    Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
                     Photos = user.Photos
                 };
+
+                return profile;
             }
         }
     }

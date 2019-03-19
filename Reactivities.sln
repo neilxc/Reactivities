@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistence", "Persistence\Persistence.csproj", "{BB58CFD4-CEA0-42F5-8863-C7C99B88483D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{361003AC-D92D-444C-B4CD-2AF9C77A8C0B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.Tests", "tests\Application.Tests\Application.Tests.csproj", "{7D4CFCB7-153C-4B1E-9729-3401EC0824C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,5 +76,20 @@ Global
 		{BB58CFD4-CEA0-42F5-8863-C7C99B88483D}.Release|x64.Build.0 = Release|Any CPU
 		{BB58CFD4-CEA0-42F5-8863-C7C99B88483D}.Release|x86.ActiveCfg = Release|Any CPU
 		{BB58CFD4-CEA0-42F5-8863-C7C99B88483D}.Release|x86.Build.0 = Release|Any CPU
+		{7D4CFCB7-153C-4B1E-9729-3401EC0824C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D4CFCB7-153C-4B1E-9729-3401EC0824C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D4CFCB7-153C-4B1E-9729-3401EC0824C6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7D4CFCB7-153C-4B1E-9729-3401EC0824C6}.Debug|x64.Build.0 = Debug|Any CPU
+		{7D4CFCB7-153C-4B1E-9729-3401EC0824C6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7D4CFCB7-153C-4B1E-9729-3401EC0824C6}.Debug|x86.Build.0 = Debug|Any CPU
+		{7D4CFCB7-153C-4B1E-9729-3401EC0824C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D4CFCB7-153C-4B1E-9729-3401EC0824C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D4CFCB7-153C-4B1E-9729-3401EC0824C6}.Release|x64.ActiveCfg = Release|Any CPU
+		{7D4CFCB7-153C-4B1E-9729-3401EC0824C6}.Release|x64.Build.0 = Release|Any CPU
+		{7D4CFCB7-153C-4B1E-9729-3401EC0824C6}.Release|x86.ActiveCfg = Release|Any CPU
+		{7D4CFCB7-153C-4B1E-9729-3401EC0824C6}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7D4CFCB7-153C-4B1E-9729-3401EC0824C6} = {361003AC-D92D-444C-B4CD-2AF9C77A8C0B}
 	EndGlobalSection
 EndGlobal

@@ -23,6 +23,14 @@ export const setActivityProps = (activity, user) => {
   return activity;
 };
 
+export const setProfileProps = (profile) => {
+  if (profile.dateOfBirth) profile.dateOfBirth = new Date(profile.dateOfBirth);
+  profile.photos && profile.photos.forEach(photo => {
+    photo.dateAdded = new Date(photo.dateAdded);
+  });
+  return profile;
+}
+
 export const createAttendee = (user) => {
   return {
     dateJoined: new Date(),

@@ -3,11 +3,11 @@ import { observer, inject } from 'mobx-react';
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 
-@inject('profileStore')
+@inject('photoWidgetStore')
 @observer
-class SettingsPhotosCropper extends Component {
+class PhotoUploadWidgetCropper extends Component {
   cropImage = () => {
-    const { setImageCropResult } = this.props.profileStore;
+    const { setImageCropResult } = this.props.photoWidgetStore;
     this.refs.cropper.getCroppedCanvas().toBlob(blob => {
       setImageCropResult(blob);
     }, 'image/jpeg');
@@ -15,7 +15,7 @@ class SettingsPhotosCropper extends Component {
 
   render() {
     const {
-      profileStore: { imagePreview }
+      photoWidgetStore: { imagePreview }
     } = this.props;
     return (
       <Cropper
@@ -36,4 +36,4 @@ class SettingsPhotosCropper extends Component {
   }
 }
 
-export default SettingsPhotosCropper;
+export default PhotoUploadWidgetCropper;

@@ -58,9 +58,22 @@ body {
   border-radius: 5px;
   padding-top: 30px;
   text-align: center;
-  min-height: 236px;
+  /* min-height: 236px; */
 }
 
 .dropzone--isActive {
   border: dashed 3px green;
+}
+
+/* radio button inline styles */
+
+.radio--inline ul {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding: 0.47em;
+}
+
+.redButton {
+  color: red;
 }

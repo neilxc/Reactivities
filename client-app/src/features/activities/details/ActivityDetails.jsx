@@ -16,10 +16,13 @@ class ActivityDetails extends Component {
       activityStore: { loadActivity }
     } = this.props;
     loadActivity(+match.params.id, true);
+    this.props.activityStore.createHubConnection();
+    console.log('details component mounting')
   }
 
   componentWillUnmount() {
     this.props.activityStore.clearActivity();
+    this.props.activityStore.stopHubConnection();
   }
 
   render() {
@@ -44,7 +47,7 @@ class ActivityDetails extends Component {
             loading={loading}
           />
           <ActivityDetailsInfo activity={activity} />
-          <ActivityDetailsChat />
+          <ActivityDetailsChat key={activity.id} activity={activity} />
         </Grid.Column>
         <Grid.Column width={6}>
           <ActivityDetailsSidebar attendees={activity.attendees} />

@@ -4,8 +4,8 @@ import Dropzone from 'react-dropzone';
 import classNames from 'classnames';
 import { Icon, Header } from 'semantic-ui-react';
 
-export default inject('profileStore')(
-  observer(({ profileStore: { imagePreview, onDropFile } }) => (
+export default inject('photoWidgetStore')(
+  observer(({ photoWidgetStore: { imagePreview, onDropFile } }) => (
     <Dropzone
       onDrop={acceptedFiles => onDropFile(acceptedFiles)}
       multiple={false}
@@ -20,7 +20,7 @@ export default inject('profileStore')(
         >
           <input {...getInputProps()} />
           <Icon name='upload' size='huge' />
-          <Header content='Drop image here or click to upload' />
+          <Header content='Drop image here' />
         </div>
       )}
     </Dropzone>
