@@ -29,7 +29,7 @@ const ActivityListItem = ({
             style={{ marginBottom: 3 }}
             size={'tiny'}
             circular
-            src={activity.host.image || 'assets/user.png'}
+            src={(activity.host && activity.host.image) || 'assets/user.png'}
           />
           <ItemContent>
             <ItemHeader as={Link} to={`/activity/${activity.id}`}>
@@ -68,6 +68,15 @@ const ActivityListItem = ({
     <Segment secondary>
       <ActivityListItemAttendees attendees={activity.attendees} />
     </Segment>
+    {activity.followingCount > 0 && (
+      <Segment>
+        <p style={{ color: 'orange' }}>
+          {activity.followingCount}{' '}
+          {activity.followingCount === 1 ? 'person' : 'people'} you are
+          following attending
+        </p>
+      </Segment>
+    )}
     <Segment clearing>
       <span>{activity.description}</span>
       <Button

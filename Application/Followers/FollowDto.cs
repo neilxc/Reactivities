@@ -1,20 +1,15 @@
-using System;
-using System.Collections.Generic;
-using Domain;
 using Newtonsoft.Json;
 
-namespace Application.Profiles
+namespace Application.Followers
 {
-    public class Profile
+    public class FollowDto
     {
         public string DisplayName { get; set; }
         public string Username { get; set; }
-        public string Bio { get; set; }
         public string Image { get; set; }
 
         [JsonProperty("following")]
         public bool IsFollowed { get; set; }
         public int FollowersCount { get; set; }
-        public int FollowingCount { get; set; }
     }
 }

@@ -1,8 +1,13 @@
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Errors;
+using Application.Followers;
 using Application.Interfaces;
 using AutoMapper;
+using Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -11,35 +16,33 @@ namespace Application.Profiles
 {
     public class Details
     {
-        public class Query : IRequest<Profile>
+        public class Query : IRequest<ProfileDetailed>
         {
             public string Username { get; set; }
         }
 
-        public class Handler : IRequestHandler<Query, Profile>
+        public class Handler : IRequestHandler<Query, ProfileDetailed>
         {
             private readonly DataContext _context;
-            public Handler(DataContext context)
+            private readonly IMapper _mapper;
+            private readonly IUserAccessor _userAccessor;
+
+            public Handler(DataContext context, IMapper mapper, IUserAccessor userAccessor)
             {
+                _userAccessor = userAccessor;
+                _mapper = mapper;
                 _context = context;
             }
 
-            public async Task<Profile> Handle(Query request,
+            public async Task<ProfileDetailed> Handle(Query request,
                 CancellationToken cancellationToken)
             {
-                var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName ==
-                     request.Username);
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == request.Username);
 
-                // why no mapper?
+                if (user == null)
+                    throw new RestException(HttpStatusCode.NotFound);
 
-                var profile = new Profile
-                {
-                    DisplayName = user.DisplayName,
-                    Username = user.UserName,
-                    Bio = user.Bio,
-                    Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
-                    Photos = user.Photos
-                };
+                var profile = _mapper.Map<AppUser, ProfileDetailed>(user);
 
                 return profile;
             }

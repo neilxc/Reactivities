@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Application.Errors;
@@ -23,13 +24,21 @@ namespace Application.Profiles
 
         public async Task<Profile> ReadProfile(string username)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName ==
-                _userAccessor.GetCurrentUsername());
-            
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == username);
+
             if (user == null)
                 throw new RestException(HttpStatusCode.NotFound);
-            
+
+            var currentUser = await _context.Users.FirstOrDefaultAsync(x => x.UserName ==
+                _userAccessor.GetCurrentUsername());
+
             var profile = _mapper.Map<AppUser, Profile>(user);
+
+            if (currentUser.Following.Any(x => x.TargetId == user.Id))
+                profile.IsFollowed = true;
+
+            profile.FollowersCount = user.Followers.Count();
+            profile.FollowingCount = user.Following.Count();
 
             return profile;
         }

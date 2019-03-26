@@ -14,5 +14,7 @@ namespace Domain
         public string Gender { get; set; }
         public virtual ICollection<ActivityUser> ActivityUsers { get; set; }
         public virtual ICollection<Photo> Photos { get; set; }
+        public virtual ICollection<AppUserFollowings> Following { get; set; }
+        public virtual ICollection<AppUserFollowings> Followers { get; set; }
     }
 }

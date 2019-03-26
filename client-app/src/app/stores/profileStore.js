@@ -1,22 +1,88 @@
-import { action, observable, runInAction, computed } from 'mobx';
+import { action, observable, runInAction, computed, reaction } from 'mobx';
 import agent from '../api/agent';
 import { isEmpty } from '../common/util/util';
 import authStore from './authStore';
 import photoWidgetStore from './photoWidgetStore';
-import {setProfileProps} from '../common/util/util';
+import { setProfileProps } from '../common/util/util';
 
 class ProfileStore {
+  constructor() {
+    reaction(
+      () => this.activeTab,
+      activeTab => {
+        console.log({activeTab})
+        if (activeTab !== 3 && activeTab !== 4) {
+          console.log('in reaction not 3 or 4')
+          this.profiles = [];
+        }
+        if (activeTab === 3) {
+          this.loadingFollowings = true;
+          agent.Profiles.listFollowings(this.profile.username, true).then(
+            action(profiles => {
+              this.profiles = profiles;
+              this.loadingFollowings = false;
+            })
+          );
+        }
+        if (activeTab === 4) {
+          this.loadingFollowings = true;
+          agent.Profiles.listFollowings(this.profile.username, false).then(
+            action(profiles => {
+              this.profiles = profiles;
+              this.loadingFollowings = false;
+            })
+          );
+        }
+      }
+    );
+  }
+
   @observable profile = {};
+  @observable profiles = [];
   @observable loading = false;
   @observable loadingProfile = false;
+  @observable loadingFollowings = false;
   @observable loadingPhoto = false;
   @observable clickedButton = null;
   @observable editProfileMode = false;
   @observable editPhotoMode = false;
   @observable addPhotoMode = false;
+  @observable activeTab = null;
 
   @computed get isCurrentUser() {
     return authStore.user.username === this.profile.username;
+  }
+
+  @action setActiveTab = (e, data) => {
+    this.activeTab = data.activeIndex;
+  };
+
+  @action followUser = async (username) => {
+    this.loading = true;
+    try {
+      const following = await agent.Profiles.follow(username);
+      runInAction(() => {
+        this.profile.following = true;
+        this.loading = false;
+      });
+    } catch (err) {
+      console.log(err);
+      runInAction(() => this.loading = false);
+    }
+  }
+
+  @action unfollowUser = async (username) => {
+    this.loading = true;
+    try {
+      await agent.Profiles.unfollow(username);
+      runInAction(() => {
+        this.profile.following = false;
+        this.loading = false;
+      })
+    } catch (err) {
+      console.log(err);
+      this.loading = false;
+    }
   }
 
   @action loadProfile = async (username, { acceptCached = false } = {}) => {
@@ -51,8 +117,8 @@ class ProfileStore {
         this.editProfileMode = false;
       });
     } catch (err) {
-        console.log(err);
-        this.loading = false;
+      console.log(err);
+      this.loading = false;
     }
   };
 
@@ -101,20 +167,22 @@ class ProfileStore {
 
   @action toggleEditProfileMode = () => {
     this.editProfileMode = !this.editProfileMode;
-  }
+  };
 
   @action toggleEditPhotoMode = () => {
     this.editPhotoMode = !this.editPhotoMode;
-  }
+  };
 
   @action toggleAddPhotoMode = () => {
     this.addPhotoMode = !this.addPhotoMode;
-  }
+  };
 
   @action addPhoto = async () => {
     this.loadingPhoto = true;
     try {
-      const photo = await agent.Profiles.addPhoto(photoWidgetStore.croppedImage);
+      const photo = await agent.Profiles.addPhoto(
+        photoWidgetStore.croppedImage
+      );
       runInAction('adding photo to profile', () => {
         this.profile.photos.push(photo);
         this.loadingPhoto = false;

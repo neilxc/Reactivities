@@ -41,7 +41,7 @@ axios.interceptors.response.use(undefined, error => {
 
 const responseBody = res => Promise.resolve(res.data);
 
-const sleep = x => new Promise(resolve => setTimeout(() => resolve(x), 200));
+const sleep = x => new Promise(resolve => setTimeout(() => resolve(x), 1000));
 
 const requests = {
   get: url =>
@@ -67,7 +67,10 @@ const requests = {
   form: (url, file) => {
     let formData = new FormData();
     formData.append('File', file);
-    return axios.post(url, formData, {headers: {'Content-type': 'multipart/form-data'}})
+    return axios
+      .post(url, formData, {
+        headers: { 'Content-type': 'multipart/form-data' }
+      })
       .then(responseBody);
   }
 };
@@ -86,17 +89,20 @@ const Users = {
   current: () => requests.get(`/user`),
   login: (email, password) =>
     requests.post('/users/login', { email, password }),
-  register: (values) =>
-    requests.post('/users/register', values)
+  register: values => requests.post('/users/register', values)
 };
 
 const Profiles = {
-  get: (username) => requests.get(`/profiles/${username}`),
-  setMainPhoto: (id) => requests.post(`/photos/${id}/setmain`),
-  deletePhoto: (id) => requests.del(`/photos/${id}`),
-  addPhoto: (photo) => requests.form(`/photos`, photo),
-  update: (profile) => requests.put('/profiles', profile)
-}
+  get: username => requests.get(`/profiles/${username}`),
+  setMainPhoto: id => requests.post(`/photos/${id}/setmain`),
+  deletePhoto: id => requests.del(`/photos/${id}`),
+  addPhoto: photo => requests.form(`/photos`, photo),
+  update: profile => requests.put('/profiles', profile),
+  follow: username => requests.post(`/profiles/${username}/follow`),
+  unfollow: username => requests.del(`/profiles/${username}/follow`),
+  listFollowings: (username, followers) =>
+    requests.get(`/profiles/${username}/follow?followers=${followers}`)
+};
 
 export default {
   Activities,

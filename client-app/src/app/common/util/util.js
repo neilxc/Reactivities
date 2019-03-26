@@ -17,9 +17,9 @@ export const setActivityProps = (activity, user) => {
     a => a.username === user.username && a.isHost === true
   );
   activity.host = activity.attendees.find(a => a.isHost === true);
-  activity.attendees.forEach(attendee => {
-    attendee.dateJoined = new Date(attendee.dateJoined)
-  });
+  activity.followingCount = activity.attendees.reduce((n, attendee) => {
+    return n + (attendee.following === true);
+  }, 0);
   return activity;
 };
 

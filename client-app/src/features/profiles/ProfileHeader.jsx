@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Grid, Item, Header, Segment, Button } from 'semantic-ui-react';
-import { observer } from 'mobx-react';
+import { observer, inject } from 'mobx-react';
 
-export default observer(({ profile }) => (
-  <Segment>
-    <Grid stackable>
-      <Grid.Column width={12} verticalAlign='middle'>
+export default inject('profileStore')(
+  observer(
+    ({
+      isCurrentUser,
+      profileStore: { followUser, unfollowUser, loading, profile }
+    }) => (
+      <Segment>
         <Item.Group>
           <Item>
             <Item.Image
@@ -15,16 +18,25 @@ export default observer(({ profile }) => (
             />
             <Item.Content verticalAlign='middle'>
               <Header as='h1'>{profile.displayName}</Header>
+              {!isCurrentUser && (
+                <Item.Extra>
+                  <Button
+                    basic
+                    content={profile.following ? 'Unfollow' : 'Follow'}
+                    color={'teal'}
+                    loading={loading}
+                    onClick={
+                      profile.following
+                        ? () => unfollowUser(profile.username)
+                        : () => followUser(profile.username)
+                    }
+                  />
+                </Item.Extra>
+              )}
             </Item.Content>
           </Item>
         </Item.Group>
-      </Grid.Column>
-      <Grid.Column width={4} verticalAlign='bottom'>
-        <Button fluid basic animated color='green' attached='bottom'>
-          <Button.Content visible>Following</Button.Content>
-          <Button.Content hidden>Unfollow</Button.Content>
-        </Button>
-      </Grid.Column>
-    </Grid>
-  </Segment>
-));
+      </Segment>
+    )
+  )
+);
