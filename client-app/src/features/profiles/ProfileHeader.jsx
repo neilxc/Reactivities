@@ -1,5 +1,5 @@
-import React, { Fragment } from 'react';
-import { Grid, Item, Header, Segment, Button } from 'semantic-ui-react';
+import React from 'react';
+import { Item, Header, Segment, Button } from 'semantic-ui-react';
 import { observer, inject } from 'mobx-react';
 
 export default inject('profileStore')(

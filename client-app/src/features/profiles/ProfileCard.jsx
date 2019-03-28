@@ -1,9 +1,7 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { Card, Icon, Image, Button, Divider } from 'semantic-ui-react';
-import { format } from 'date-fns';
+import { Card,  Image } from 'semantic-ui-react';
 import { inject, observer } from 'mobx-react';
-import ProfileFollowButtons from './ProfileFollowButtons';
 
 export default inject('authStore')(
   observer(({ authStore: { user }, profile }) => (

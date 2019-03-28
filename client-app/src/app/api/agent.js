@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { routingStore as router } from '../../index';
 import commonStore from '../stores/commonStore';
+import activityStore from '../stores/activityStore';
 
 axios.defaults.baseURL = 'https://localhost:5001/api';
 
@@ -76,7 +77,11 @@ const requests = {
 };
 
 const Activities = {
-  all: () => requests.get(`/activities`),
+  all: () =>
+    axios
+      .get(`/activities`, { params: activityStore.axiosParams })
+      .then(sleep)
+      .then(responseBody),
   get: id => requests.get(`/activities/${id}`),
   create: activity => requests.post(`/activities`, activity),
   update: activity => requests.put(`/activities/${activity.id}`, activity),
@@ -104,8 +109,15 @@ const Profiles = {
     requests.get(`/profiles/${username}/follow?followers=${followers}`)
 };
 
+const UserActivities = {
+  past: (username) => requests.get(`/profiles/${username}/activities?past=true`),
+  future: (username) => requests.get(`/profiles/${username}/activities?future=true`),
+  hosting: (username) => requests.get(`/profiles/${username}/activities?hosting=true`)
+}
+
 export default {
   Activities,
   Users,
-  Profiles
+  Profiles,
+  UserActivities
 };

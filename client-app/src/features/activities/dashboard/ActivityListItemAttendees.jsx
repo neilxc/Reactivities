@@ -1,8 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
-import { ListItem, Image, List, Popup } from 'semantic-ui-react';
+import { ListItem, Image, List } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-import ProfileCard from '../../profiles/ProfileCard';
 
 const styles = {
   borderColor: 'orange',

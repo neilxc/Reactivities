@@ -1,4 +1,4 @@
-import { observable, action, computed, configure, runInAction } from 'mobx';
+import { observable, action, computed, configure, runInAction, reaction } from 'mobx';
 import agent from '../api/agent';
 import { routingStore } from '../../index';
 import authStore from './authStore';
@@ -8,7 +8,20 @@ import { HubConnectionBuilder, LogLevel } from '@aspnet/signalr';
 
 configure({ enforceActions: 'always' });
 
+const LIMIT = 3;
+
 class ActivityStore {
+  constructor() {
+    reaction(
+      () => Object.values(this.predicate),
+      predicate => {
+        this.page = 0;
+        this.activityRegistry.clear();
+        this.loadActivities()
+      }
+    )
+  }
+
   @observable activityRegistry = observable(new Map());
   @observable activities = [];
   @observable activity = {};
@@ -18,6 +31,41 @@ class ActivityStore {
   @observable loading = false;
   @observable target = null;
   @observable.ref hubConnection = null;
+  @observable activityCount = 0;
+  @observable page = 0;
+  @observable predicate = {};
+  
+  @computed get totalPages() {
+    return Math.ceil(this.activityCount / LIMIT);
+  }
+
+  @computed get axiosParams() {
+    const params = new URLSearchParams();
+    params.append('limit', LIMIT);
+    params.append('offset', `${this.page ? this.page * LIMIT : 0}`);
+    this.predicate.isGoing && params.append('isGoing', 'true');
+    this.predicate.isHost && params.append('isHost', 'true');
+    this.predicate.startDate && params.append('startDate', this.predicate.startDate.toISOString());
+    return params;
+  }
+
+  @action setPredicate = (e, {name}) => {
+    switch (name) {
+      case 'isGoing':
+        this.predicate[name] = this.predicate[name] ? null : true;
+        break;
+      case 'isHost':
+        this.predicate[name] = this.predicate[name] ? null : true;
+        break;
+      default:
+        this.predicate = {}
+        break;
+    }
+  }
+
+  @action setDatePredicate = (date) => {
+    this.predicate.startDate = date
+  }
 
   @action createHubConnection(id) {
     this.hubConnection = new HubConnectionBuilder()
@@ -46,6 +94,10 @@ class ActivityStore {
     this.hubConnection.stop();
   };
 
+  @action setPage = (page) => {
+    this.page = page;
+  }
+
   @action addComment = async values => {
     values.id = this.activity.id;
     try {
@@ -57,16 +109,18 @@ class ActivityStore {
     }
   };
 
-  @action async loadActivities() {
+  @action loadActivities = async () => {
     this.loadingInitial = true;
     try {
-      const activities = await agent.Activities.all();
+      const activityEnvelope = await agent.Activities.all();
+      const {activities, activityCount} = activityEnvelope;
       const user = authStore.user;
       runInAction('Populate activity registry', () => {
         activities.forEach(activity => {
           activity = setActivityProps(activity, user);
           this.activityRegistry.set(activity.id, activity);
         });
+        this.activityCount = activityCount;
         this.loadingInitial = false;
       });
     } catch (error) {
@@ -78,7 +132,6 @@ class ActivityStore {
   }
 
   @action loadActivity = async (id, acceptCached = false) => {
-    console.log('load activity fired');
     if (!id) return null;
     if (acceptCached) {
       const activity = this.getActivity(id);
@@ -200,11 +253,8 @@ class ActivityStore {
   }
 
   getActivitiesByDate(activities) {
-    const sortedActivities = activities
-      .slice()
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     return Object.entries(
-      sortedActivities.reduce((activities, activity) => {
+      activities.reduce((activities, activity) => {
         const date = activity.date.toISOString().split('T')[0];
         activities[date] = activities[date]
           ? [...activities[date], activity]

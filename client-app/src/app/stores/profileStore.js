@@ -10,9 +10,7 @@ class ProfileStore {
     reaction(
       () => this.activeTab,
       activeTab => {
-        console.log({activeTab})
         if (activeTab !== 3 && activeTab !== 4) {
-          console.log('in reaction not 3 or 4')
           this.profiles = [];
         }
         if (activeTab === 3) {
@@ -42,12 +40,14 @@ class ProfileStore {
   @observable loading = false;
   @observable loadingProfile = false;
   @observable loadingFollowings = false;
+  @observable loadingActivities = false;
   @observable loadingPhoto = false;
   @observable clickedButton = null;
   @observable editProfileMode = false;
   @observable editPhotoMode = false;
   @observable addPhotoMode = false;
   @observable activeTab = null;
+  @observable userActivities = [];
 
   @computed get isCurrentUser() {
     return authStore.user.username === this.profile.username;
@@ -57,33 +57,64 @@ class ProfileStore {
     this.activeTab = data.activeIndex;
   };
 
-  @action followUser = async (username) => {
+  @action setUserActivityTab = (e, { activeIndex }, username) => {
+    this.loadingActivities = true;
+    switch (activeIndex) {
+      case 1: //past
+        agent.UserActivities.past(username).then(
+          action(activities => {
+            this.userActivities = activities;
+            this.loadingActivities = false;
+          })
+        );
+        break;
+      case 2: //hosting
+        agent.UserActivities.hosting(username).then(
+          action(activities => {
+            this.userActivities = activities;
+            this.loadingActivities = false;
+          })
+        );
+        break;
+      default:
+        // future
+        agent.UserActivities.future(username).then(
+          action(activities => {
+            this.userActivities = activities;
+            this.loadingActivities = false;
+          })
+        );
+        break;
+    }
+  };
+
+  @action followUser = async username => {
     this.loading = true;
     try {
-      const following = await agent.Profiles.follow(username);
+      await agent.Profiles.follow(username);
       runInAction(() => {
         this.profile.following = true;
         this.loading = false;
       });
     } catch (err) {
       console.log(err);
-      runInAction(() => this.loading = false);
+      runInAction(() => (this.loading = false));
     }
-  }
+  };
 
-  @action unfollowUser = async (username) => {
+  @action unfollowUser = async username => {
     this.loading = true;
     try {
       await agent.Profiles.unfollow(username);
       runInAction(() => {
         this.profile.following = false;
         this.loading = false;
-      })
+      });
     } catch (err) {
       console.log(err);
       this.loading = false;
     }
-  }
+  };
 
   @action loadProfile = async (username, { acceptCached = false } = {}) => {
     if (acceptCached && !isEmpty(this.profile)) return;
@@ -146,6 +177,7 @@ class ProfileStore {
 
   @action deletePhoto = async (photo, e) => {
     this.clickedButton = { name: e.target.name, type: 'delete' };
+    console.log(this.clickedButton)
     this.loadingPhoto = true;
     try {
       await agent.Profiles.deletePhoto(photo.id);
@@ -153,6 +185,10 @@ class ProfileStore {
         this.profile.photos = this.profile.photos.filter(
           a => a.id !== photo.id
         );
+        if(photo.isMain) {
+          authStore.user.image = null;
+          this.profile.image = null;
+        }
         this.loadingPhoto = false;
         this.clickedButton = null;
       });
@@ -185,6 +221,10 @@ class ProfileStore {
       );
       runInAction('adding photo to profile', () => {
         this.profile.photos.push(photo);
+        if (photo.isMain) {
+          authStore.user.image = photo.url;
+          this.profile.image = photo.url;
+        }
         this.loadingPhoto = false;
         this.addPhotoMode = false;
         photoWidgetStore.clearImages();

@@ -12,8 +12,6 @@ namespace Application.Activities
             CreateMap<Activity, ActivityDto>()
                 .ForMember(dest => dest.Attendees, opt =>
                     opt.MapFrom(src => src.ActivityUsers));
-            CreateMap<Activity, ActivityDetailedDto>()
-                .IncludeBase<Activity, ActivityDto>();
             CreateMap<ActivityUser, AttendeeDto>()
                 .ForMember(dest => dest.Username, opt =>
                     opt.MapFrom(src => src.AppUser.UserName))

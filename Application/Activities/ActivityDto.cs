@@ -15,5 +15,6 @@ namespace Application.Activities
         public string City { get; set; }
         public string Venue { get; set; }
         public ICollection<AttendeeDto> Attendees { get; set; }
+        public ICollection<CommentDto> Comments { get; set; }
     }
 }

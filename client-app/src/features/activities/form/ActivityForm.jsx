@@ -23,7 +23,7 @@ class ActivityForm extends Component {
       if (!activity) form.init();
 
       if (activity) {
-        const {attendees, isGoing, isHost, host, ...values} = activity;
+        const {attendees, isGoing, isHost, host, comments, followingCount, ...values} = activity;
         values.time = values.date;
         form.init({ ...values });
       }

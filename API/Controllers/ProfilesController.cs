@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Application.Profiles;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,13 @@ namespace API.Controllers
         public async Task<Profile> Edit(Edit.Command command)
         {
             return await Mediator.Send(command);
+        }
+
+        [HttpGet("{username}/activities")]
+        public async Task<List<UserActivityDto>> GetUserActivities(string username, bool past, 
+            bool future, bool hosting)
+        {
+            return await Mediator.Send(new UserActivities.Query(username, past, future, hosting));
         }
     }
 }
